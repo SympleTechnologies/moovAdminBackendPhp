@@ -1,0 +1,38 @@
+<?php
+namespace src\app\Middleware;
+
+use src\app\Models\User as Users;
+use src\config\Api_Controller;
+
+class JAuth
+{
+public function key_check($key)
+    {
+        $headers = apache_request_headers();
+        $token = $headers['token'];
+
+        if ($key!=$token) {
+          return FALSE;
+        
+    }else{
+        return TRUE;
+    }
+}
+
+public function key_failed(){
+    $headers = apache_request_headers();
+$token = $headers['token'];
+
+    $output = array(
+    "status" => false,
+    "data" => array(),
+    "message" => "access token failed",
+    "token_received"=>$token
+);
+
+return $this->response->withJson($output);
+
+}
+}
+
+?>
