@@ -1,0 +1,4 @@
+logs/
+vendor/
+error_log
+v2/error_log.old
