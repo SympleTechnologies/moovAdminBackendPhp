@@ -1,0 +1,1432 @@
+<?php
+
+namespace src\app\Controllers;
+
+use src\app\Helpers\Helper;
+use src\app\Models\DriverDetails;
+use src\config\Api_Controller;
+
+class Booking extends Api_Controller
+{
+
+    public function search_amount($request, $response, $args)
+    {
+
+        $origin = $args['from'];
+
+        $destination = $args['to'];
+
+        $seats = $args['seats'];
+
+        $pooling = $args['pooling'];
+
+        $googleApiKey = $this->env['google_map_api'];
+
+        $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints";
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+
+            CURLOPT_URL => $url,
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_ENCODING => "",
+
+            CURLOPT_MAXREDIRS => 10,
+
+            CURLOPT_TIMEOUT => 30,
+
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+
+            CURLOPT_CUSTOMREQUEST => "GET",
+
+            CURLOPT_HTTPHEADER => [
+
+                "cache-control: no-cache",
+
+            ],
+
+        ]);
+
+        $response = curl_exec($curl);
+
+        $response_array = json_decode($response, true);
+
+        $legs = $response_array['routes'][0]['legs'];
+
+        $distance = $legs[0]['distance']['text'];
+
+        $distance_value = $legs[0]['distance']['value'];
+
+        $duration = $legs[0]['duration']['text'];
+
+        $total_distance = $distance_value / 1000;
+
+        $rate = 2;
+
+        $extra = 50;
+
+        $fix = 65;
+
+        $above = 110;
+
+        $next = 55;
+
+        $min = 3;
+
+        $cons = 4;
+
+        $limit = 2;
+
+        if ($limit <= $total_distance) {
+
+            $amount = ($total_distance * $rate);
+
+        } else {
+
+            $amount = 10;
+
+        }
+
+        $result = array(
+
+            "status" => true,
+
+            "data" => array("amount" => round($amount, 2)),
+
+            "message" => "Amount calculated",
+
+            "links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+        );
+
+        return $this->response->withJson($result);
+
+    }
+
+    public function calculate_fare($request, $response, $args)
+    {
+
+        $distance = $args['distance'];
+
+        $pooling = $args['pooling'];
+
+        $seats = $args['seats'];
+
+        //$college = $args['college'];
+
+        $total_distance = $distance / 1000;
+
+        $amount = $total_distance * 2;
+
+        $result = array(
+
+            "status" => true,
+
+            "data" => array("amount" => $amount),
+
+            "message" => "Amount calculated",
+
+            "links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+        );
+
+        return $this->response->withJson($result);
+
+    }
+
+    public static function getClosestCars($lat, $lng, $city, $distance = 20, $limit = 20)
+    {
+
+        $time = time_now();
+
+        $date = date('Y-m-d', strtotime($time));
+
+        $ctime = date('H:i:s', strtotime($time));
+
+        $coordinates = ['latitude' => $lat, 'longitude' => $lng];
+
+        $where = array(
+
+            "dd_status_date" => $date,
+
+        );
+
+        $cares = self::scopeIsWithinMaxDistance(DriverDetails::raw('select *'), $coordinates, $distance)
+
+            ->where($where)
+
+            ->whereIn('dd_curent_status', ['online', 'ontrip', 'onride'])
+
+            ->limit($limit)->get();
+
+        return $cares ? $cares->toArray() : null;
+
+    }
+
+    public static function scopeIsWithinMaxDistance($query, $coordinates, $radius = 50)
+    {
+
+        $haversine = "(3961 * acos(cos(radians(" . $coordinates['latitude'] . "))
+
+                * cos(radians(`dd_current_lat`))
+
+                * cos(radians(`dd_current_long`)
+
+                - radians(" . $coordinates['longitude'] . "))
+
+                + sin(radians(" . $coordinates['latitude'] . "))
+
+                * sin(radians(`dd_current_lat`))))";
+
+        return $query->select('*')
+
+            ->selectRaw("{$haversine} AS distance")
+
+            ->orderByRaw("{$haversine} asc")
+
+            ->whereRaw("{$haversine} < ?", [$radius]);
+
+        // ->groupBy("city");
+
+    }
+
+    public function distance_jj_best()
+    {
+
+        $radius = 50;
+
+        $drivers_distance = DriverDetails::select('driver_details.*')
+
+            ->join('users', function ($join) {
+
+                $join->on('driver_details.dd_driver_id', '=', 'users.u_id');
+
+            })
+
+            ->selectRaw('( 6371 * acos( cos( radians(?) ) *
+
+                               cos( radians( dd_current_lat ) )
+
+                               * cos( radians( dd_current_long ) - radians(?)
+
+                               ) + sin( radians(?) ) *
+
+                               sin( radians( dd_current_lat ) ) )
+
+                             ) AS distance', [$start_cordinate['lat'], $start_cordinate['lng'], $start_cordinate['lat']])
+
+            ->havingRaw("distance < ?", [$radius])
+
+            ->get();
+
+        print_r($drivers_distance);
+
+    }
+
+    /*
+
+    $rides_data = array();
+
+    foreach ($details_data as $trips) {
+
+    foreach ($trips as $trip) {
+
+    // print_r($trip);
+
+    $fixd_driverid = $trip->ct_driver_id;
+
+    $fixd_is_pooling = $trip->ct_is_pooling;
+
+    $details = array(
+
+    "cr_trip_id" => $trip->ct_id,
+
+    );
+
+    $rides_data[] = $this->db->table('cab_rides')
+
+    ->select("*")->where($details)
+
+    ->whereNotIn('cr_cab_ride_status', ["completed", "cancelled", "any other array valuess"])
+
+    ->orderBy('cab_rides.cr_id', 'desc')
+
+    ->limit(1)->get()->toArray();
+
+    }
+
+    }
+
+    foreach ($rides_data as $rides) {
+
+    foreach ($rides as $ride) {
+
+    //s print_r($ride);
+
+    if (!empty($ride)) {
+
+    $trip_found = true;
+
+    $fixd_tripid = $ride->cr_trip_id;
+
+    $fixd_driverid = $ride->cr_driver_id;
+
+    $fixd_driver_seats_in_use = $ride->cr_no_passengers;
+
+    }
+
+    }
+
+    }
+
+     */
+
+    public function book_ride()
+    {
+
+        $time = time_now();
+
+        $date = date('Y-m-d', strtotime($time));
+
+        $ctime = date('H:i:s', strtotime($time));
+
+        $drivercat = $this->env['driver_id'];
+
+        $uid = $this->input['userid'];
+
+        $from = $this->input['from'];
+
+        $to = $this->input['to'];
+
+        $pooling = $this->input['pooling'];
+
+        $seats = $this->input['seats'];
+
+        $amount = $this->input['amount'];
+
+        $current_lat = $this->input['current_lat'];
+
+        $current_long = $this->input['current_long'];
+
+        $from_lat = $this->input['from_lat'];
+
+        $from_long = $this->input['from_long'];
+
+        $to_lat = $this->input['to_lat'];
+
+        $to_long = $this->input['to_long'];
+
+        $mapData = $this->get_map_data($from, $to);
+
+//echo json_encode($mapData);
+
+        $start = $mapData['start'];
+
+        $ends = $mapData['ends'];
+
+        $distance = $mapData['distance'];
+
+        $calculated_distance = $mapData['calculated_distance'];
+
+        $distance_value = $mapData['distance_value'];
+
+        $duration = $mapData['duration'];
+
+        $duration_value = $mapData['duration_value'];
+
+        $polyline = $mapData['polyline'];
+
+        $fullCordinates = $mapData['fullCordinates'];
+
+        $fullCordinates_latlng = $mapData['fullCordinates_latlng'];
+
+        //  $start_cordinate = $mapData['start_cordinate'];
+
+        //get drivers near user
+
+        if ($drivers_distance = $this->getClosestCars($from_lat, $from_long, $groupby = "", $distance = $this->env['booking_distance'], $limit = 15)) {
+
+            // print_r($drivers_distance);
+
+            //get driver id
+
+            $trips_details_data = array();
+
+            //find trip details
+
+            $di = 0;
+
+            $drivers = $drivers_distance;
+
+            foreach ($drivers_distance as $Drivers) {
+
+                $distance = $Drivers['distance'];
+
+                $driver_id = $Drivers['dd_driver_id'];
+
+                $driver_college = $Drivers['dd_colleg_id'];
+
+                $car_details = $Drivers['dd_car_number'];
+
+                $car_capacity = $Drivers['dd_car_capacity'];
+
+                $statement = $this->pdo->prepare("SELECT * FROM cab_trip where `ct_driver_id`=$driver_id and ct_date = '$date' and ct_trip_status NOT IN ('completed', 'any other array valuess'  )  ORDER BY `cab_trip`.`ct_id` DESC LIMIT 1");
+                // and ct_is_pooling='yes' 
+                $statement->execute();
+
+                $trips_details_data = $statement->fetch(); //  All($this->pdo::FETCH_ASSOC);
+
+                if (is_array($trips_details_data) && !empty($trips_details_data)) {
+
+                    $trips_data = $this->b_get_trips_data($trips_details_data['ct_id']);
+
+                    $drivers[$di]['ontrip'] = 'yes';
+
+                    $drivers[$di]['used_seats'] = $trips_data[0]['total_used_seats'];
+                    $drivers[$di]['used_seats'] = $trips_data[0]['total_used_seats'];
+
+                    $drivers[$di]['trips'] = $trips_details_data;
+
+                    $drivers[$di]['trips_data'] = $trips_data;
+
+                } else {
+
+                    $drivers[$di]['ontrip'] = 'no';
+
+                    $drivers[$di]['used_seats'] = 0;
+
+                }
+
+                $di++;
+
+            }
+
+            //find online car drivers
+
+            $index = array_keys(array_filter($drivers, function ($item) {return $item['dd_curent_status'] === 'online';}));
+
+            $cars_index_online = array();
+
+            //find car drivers with seat capacity
+
+            foreach ($index as $key => $val) {
+
+                if ($seats <= $drivers_distance[$val]['dd_car_capacity']) {
+
+                    array_push($cars_index_online, $val);
+
+                }
+
+            }
+
+            if ($pooling == 'yes') {
+
+
+
+            } else {
+
+            }
+
+            print_r($drivers);
+
+        }} //delete when remove omment
+
+    public function b_get_trips_data($id = 0)
+    {
+
+        $tripid = $id;
+
+        $statement = $this->pdo->prepare("SELECT cr_id,cr_user_id,cr_booked_on,cr_cab_ride_status,cr_no_passengers,cr_polyline, ( SELECT SUM(`cr_no_passengers`) as total FROM `cab_rides` WHERE `cr_trip_id` = $tripid and cr_cab_ride_status != 'completed' GROUP BY `cr_trip_id`) as total_used_seats FROM `cab_rides` WHERE `cr_trip_id` = $tripid and cr_cab_ride_status != 'completed' "); //ORDER BY `cab_rides`.`cr_id` DESC limit 1
+
+        $statement->execute();
+
+        return $statement->fetchAll($this->pdo::FETCH_ASSOC);
+
+    }
+
+/*
+
+$rides_details_data = array();
+
+//find rides details
+
+foreach ($trips_details_data as $trips_data) {
+
+foreach ($trips_data as $trips) {
+
+$tripid = $trips['ct_id'];
+
+$statement = $this->pdo->prepare("SELECT *, ( SELECT SUM(`cr_no_passengers`) as total FROM `cab_rides` WHERE `cr_trip_id` = $tripid GROUP BY `cr_trip_id`) as total_used_seats FROM `cab_rides` WHERE `cr_trip_id` = $tripid ORDER BY `cab_rides`.`cr_id` DESC limit 1");
+
+$statement->execute();
+
+$rides_details_data[] = $statement->fetchAll($this->pdo::FETCH_ASSOC);
+
+}
+
+}
+
+//  print_r($drivers_distance);
+
+//hek if car has capacity
+
+foreach ($rides_details_data as $rides) {
+
+foreach ($rides as $ride) {
+
+$rideid = $ride['cr_trip_id'];
+
+$STH = $this->pdo->prepare("SELECT driver_details.dd_car_capacity FROM `cab_rides` join cab_trip on cab_trip.ct_id=cab_rides.cr_trip_id join driver_details on driver_details.dd_driver_id=cab_trip.ct_driver_id where cab_trip.ct_id=$rideid");
+
+$STH->execute();
+
+$result = $STH->fetch();
+
+if ($ride['total_used_seats'] <= $result['dd_car_capacity']) {
+
+$remaining_seats = $ride['total_used_seats'] - $result['dd_car_capacity'];
+
+if ($remaining_seats <= $seats) {
+
+$trip_available_for_pooling = $ride['cr_trip_id'];
+
+}
+
+}
+
+}
+
+}
+
+//find online car drivers
+
+$index = array_keys(array_filter($drivers_distance, function ($item) {return $item['dd_curent_status'] === 'online';}));
+
+$cars_index_online = array();
+
+//find car drivers with seat capacity
+
+foreach ($index as $key => $val) {
+
+if ($seats <= $drivers_distance[$val]['dd_car_capacity']) {
+
+array_push($cars_index_online, $val);
+
+}
+
+}
+
+if ($pooling == 'yes') {
+
+if (isset($trip_available_for_pooling)) {
+
+////////////////////////////////NEED CHANGE
+
+$STH = $this->pdo->prepare("SELECT driver_details.dd_car_capacity, driver_details.dd_driver_id FROM `cab_rides` join cab_trip on cab_trip.ct_id=cab_rides.cr_trip_id join driver_details on driver_details.dd_driver_id=cab_trip.ct_driver_id where cab_trip.ct_id=$trip_available_for_pooling");
+
+$STH->execute();
+
+$result = $STH->fetch();
+
+$assigned_driver_id=$result['dd_driver_id'];
+
+$assigned_ride_id = $this->db->table('cab_rides')->insertGetId([
+
+"cr_trip_id" => $trip_available_for_pooling,
+
+"cr_user_id" => $uid,
+
+"cr_booked_on" => time_now(),
+
+"cr_ride_start_time" => time_now(),
+
+// "cr_ride_end_time" => '',
+
+"cr_start_lat" => $from_lat,
+
+"cr_start_long" => $from_long,
+
+"cr_stop_lat" => $to_lat,
+
+"cr_stop_long" => $to_long,
+
+"cr_no_passengers" => $seats,
+
+"cr_amount" => $amount,
+
+"cr_payment_status" => 'unpaid',
+
+"cr_cab_ride_status" => 'booked',
+
+"cr_polyline" => $polyline,
+
+"cr_all_locations" => "",
+
+"cr_start_name" => $from,
+
+"cr_stop_name" => $to,
+
+]);
+
+$driver_details = $this->driver_details($assigned_driver_id);
+
+$assigned_driver_device_id = $driver_details['u_device_id'];
+
+$message = array(
+
+"ride_id" => $assigned_ride_id,
+
+"trip_id" => $trip_available_for_pooling,
+
+"title" => "New booking",
+
+"message" => "A new ride has been booked",
+
+);
+
+AndroidPush($assigned_driver_device_id, $message);
+
+$drive_details = $this->GetDrivingDistance($from_lat, $current_lat, $from_long, $current_long);
+
+$booking_response = array(
+
+"status" => true,
+
+"data" => array("driver_details" => $driver_details, "distance_to_drive_details" => $drive_details, "trip_id" => $trip_available_for_pooling, "ride_id" => $assigned_ride_id),
+
+"message" => "Ride booked",
+
+"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+);
+
+/////////////////////////////////////NEED CHANGE ABOVE
+
+} else {
+
+$booking_response = array(
+
+"status" => false,
+
+//"data" => array("details" => $eduInst, "user_institute" => $userdinst),
+
+"message" => "No seats available in pooling, please use unpooled cars",
+
+"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+);
+
+}
+
+} else {
+
+if (!empty($cars_index_online)) {
+
+$assigned_driver_id = $drivers_distance[$cars_index_online[0]]['dd_driver_id'];
+
+// $assigned_driver_device_id= $drivers_distance[$index]['dd_driver_id'];
+
+$assigned_tripid = $this->db->table('cab_trip')->insertGetId([
+
+"ct_driver_id" => $assigned_driver_id,
+
+"ct_date" => $date,
+
+"ct_trip_start" => time_now(),
+
+// "ct_trip_end" => $s,
+
+"ct_trip_start_from" => $from,
+
+"ct_trip_start_to" => $to,
+
+"ct_trip_status" => 'booked',
+
+"ct_remarks" => '',
+
+"ct_is_pooling" => $pooling,
+
+"ct_payment_status" => 'pending',
+
+"ct_amount" => $amount,
+
+]);
+
+$assigned_ride_id = $this->db->table('cab_rides')->insertGetId([
+
+"cr_trip_id" => $assigned_tripid,
+
+"cr_user_id" => $uid,
+
+"cr_booked_on" => time_now(),
+
+"cr_ride_start_time" => time_now(),
+
+// "cr_ride_end_time" => '',
+
+"cr_start_lat" => $from_lat,
+
+"cr_start_long" => $from_long,
+
+"cr_stop_lat" => $to_lat,
+
+"cr_stop_long" => $to_long,
+
+"cr_no_passengers" => $seats,
+
+"cr_amount" => $amount,
+
+"cr_payment_status" => 'unpaid',
+
+"cr_cab_ride_status" => 'booked',
+
+"cr_polyline" => $polyline,
+
+"cr_all_locations" =>"",
+
+"cr_start_name" => $from,
+
+"cr_stop_name" => $to,
+
+]);
+
+$driver_details = $this->driver_details($assigned_driver_id);
+
+$assigned_driver_device_id = $driver_details['u_device_id'];
+
+$message = array(
+
+"ride_id" => $assigned_ride_id,
+
+"trip_id" => $assigned_tripid,
+
+"title" => "New booking",
+
+"message" => "A new ride has been booked",
+
+);
+
+AndroidPush($assigned_driver_device_id, $message);
+
+$drive_details = $this->GetDrivingDistance($from_lat, $current_lat, $from_long, $current_long);
+
+$booking_response = array(
+
+"status" => true,
+
+"data" => array("driver_details" => $driver_details, "distance_to_drive_details" => $drive_details, "trip_id" => $assigned_tripid, "ride_id" => $assigned_ride_id),
+
+"message" => "Ride booked",
+
+"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+);
+
+} else {
+
+$booking_response = array(
+
+"status" => false,
+
+//"data" => array("details" => $eduInst, "user_institute" => $userdinst),
+
+"message" => "No seats available, please reduce seats",
+
+"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+);
+
+}
+
+}
+
+} else {
+
+$booking_response = array(
+
+"status" => false,
+
+//"data" => array("details" => $eduInst, "user_institute" => $userdinst),
+
+"message" => "No drivers found near you, please try again",
+
+"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+);
+
+}
+
+if (empty($booking_response)) {
+
+$booking_response = array(
+
+"status" => false,
+
+//"data" => array("details" => $eduInst, "user_institute" => $userdinst),
+
+"message" => "No Data",
+
+"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+);
+
+}
+
+return $this->response->withJson($booking_response);
+
+}
+
+ */
+
+    public function GetDrivingDistance($lat1, $lat2, $long1, $long2)
+    {
+
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL";
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        curl_setopt($ch, CURLOPT_PROXYPORT, 3128);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        $response_a = json_decode($response, true);
+
+        $dist = $response_a['rows'][0]['elements'][0]['distance']['text'];
+
+        $time = $response_a['rows'][0]['elements'][0]['duration']['text'];
+
+        return array('distance' => $dist, 'time' => $time);
+
+    }
+
+    public function driver_details($userid)
+    {
+
+        $users = $this->db->table('users')
+
+            ->leftJoin('driver_details', 'driver_details.dd_driver_id', '=', 'users.u_id')
+
+            ->leftJoin('edu_institution', 'edu_institution.ei_id', '=', 'users.u_edu_institution')
+
+            ->leftJoin('wallet', 'wallet.w_user_id', '=', 'users.u_id')
+
+            ->where('users.u_id', '=', $userid)
+
+            ->first();
+
+        $ratings = $this->db->table('driver_ratings')
+
+            ->where('dr_driver_id', $userid)
+
+            ->avg('dr_rating_score');
+
+        $details = array(
+
+            "driver_id" => $users->u_id,
+
+            "first_name" => $users->u_first_name,
+
+            "last_name" => $users->u_last_name,
+
+            "email" => $users->u_email,
+
+            "institution_id" => $users->u_edu_institution,
+
+            "institution_name" => $users->ei_name,
+
+            "phone" => $users->u_phone,
+
+            "phone_country" => $users->u_phone_country,
+
+            "gender" => $users->u_gender,
+
+            "vehicle_no" => $users->dd_car_number,
+
+            "verified" => $users->dd_admin_approved,
+
+            "u_device_id" => $users->u_device_id,
+
+            "car_model" => "abc",
+
+            "car_capacity" => "abc",
+
+            "license_no" => "abc",
+
+            "license_expiry" => "abc",
+
+            "dob" => "abc",
+
+            "ratings" => round($ratings, 2),
+
+            "wallet_balance" => $users->w_amount,
+
+            "image" => $users->u_image,
+
+        );
+
+        return $details;
+
+    }
+
+    public function get_map_data($start, $end)
+    {
+
+        $googleApiKey = $this->env['google_map_api'];
+
+        $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($start) . '&destination=' . urlencode($end) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints";
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+
+            CURLOPT_URL => $url,
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_ENCODING => "",
+
+            CURLOPT_MAXREDIRS => 10,
+
+            CURLOPT_TIMEOUT => 30,
+
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+
+            CURLOPT_CUSTOMREQUEST => "GET",
+
+            // CURLOPT_HTTPHEADER => [
+
+            //     "cache-control: no-cache",
+
+            // ],
+
+        ]);
+
+        $response = curl_exec($curl);
+
+// echo $response;
+
+        // die();
+
+        $array = json_decode($response, true);
+
+        // $Geocoder = new \GoogleMapsGeocoder($start);
+
+        // $response = $Geocoder->geocode();
+
+        // $start_location_cordinates = $response['results'][0]["geometry"]['location'];
+
+        $legs = $array['routes'][0]['legs'];
+
+        $bounds = $array['routes'][0]['bounds'];
+
+        $starts = $bounds['northeast'];
+
+        $ends = $bounds['southwest'];
+
+        $steps = $legs[0]['steps'];
+
+        $distance = $legs[0]['distance']['text'];
+
+        $distance_value = $legs[0]['distance']['value'];
+
+        $duration = $legs[0]['duration']['text'];
+
+        $duration_value = $legs[0]['duration']['value'];
+
+        $total_distance = $distance_value / 1000;
+
+        $poly = array();
+
+        foreach ($steps as $locations) {
+
+            $points = \Polyline::decode($locations['polyline']['points']);
+
+            $poly[] = \Polyline::pair($points);
+
+        }
+
+        $new = array_reduce($poly, 'array_merge', array());
+
+        $encoded = \Polyline::encode($new); // complete polyline
+
+        // $ckm = $this->cwGetDistanceOpt($starts['lat'], $starts['lng'],$ends['lat'], $ends['lng']);
+
+        $myarray = array();
+
+        $myarray = array_map(function ($new) {
+
+            return array(
+
+                'lat' => $new['0'],
+
+                'lng' => $new['1'],
+
+            );}, $new);
+
+        $data = array(
+
+            //  "start_cordinate" => $start_location_cordinates,
+
+            "start" => $starts,
+
+            'ends' => $ends,
+
+            "distance" => $distance,
+
+            "calculated_distance" => $total_distance,
+
+            "distance_value" => $distance_value,
+
+            "duration" => $duration,
+
+            "duration_value" => $duration_value,
+
+            // "km"=>$ckm,
+
+            "polyline" => $encoded,
+
+            "fullCordinates" => $new,
+
+            "fullCordinates_latlng" => $myarray,
+
+        );
+
+        return $data;
+
+    }
+
+    public function get_edu($request, $response, $args)
+    {
+
+        $userid = $args['id'];
+
+        $userdetails = Helper::get_user($userid);
+
+        $userdinst = $userdetails['u_edu_institution'];
+
+        $eduInst = $this->db->table('edu_institution')
+
+            ->select("ei_name as name", "ei_id as id ")->get();
+
+        $result = array(
+
+            "status" => true,
+
+            "data" => array("details" => $eduInst, "user_institute" => $userdinst),
+
+            "message" => "Amount calculated",
+
+            "links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+        );
+
+        return $this->response->withJson($result);
+
+    }
+
+    public function search($request, $response, $args)
+    {
+
+        // $origin = $this->input['origin'];
+
+        // $destination = $this->input['destination'];
+
+        // $seats=$this->input['seats'];
+
+        $origin = $args['from'];
+
+        $destination = $args['to'];
+
+        $seats = $args['seats'];
+
+        $googleApiKey = $this->env['google_map_api'];
+
+        $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints";
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+
+            CURLOPT_URL => $url,
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_ENCODING => "",
+
+            CURLOPT_MAXREDIRS => 10,
+
+            CURLOPT_TIMEOUT => 30,
+
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+
+            CURLOPT_CUSTOMREQUEST => "GET",
+
+            CURLOPT_HTTPHEADER => [
+
+                "cache-control: no-cache",
+
+            ],
+
+        ]);
+
+        $response = curl_exec($curl);
+
+        $array = json_decode($response, true);
+
+        $legs = $array['routes'][0]['legs'];
+
+        $steps = $legs[0]['steps'];
+
+        $poly = array();
+
+        foreach ($steps as $locations) {
+
+            $points = \Polyline::decode($locations['polyline']['points']);
+
+            $poly[] = \Polyline::pair($points);
+
+        }
+
+        $new = array_reduce($poly, 'array_merge', array());
+
+//print_r($new);
+
+        $encoded = \Polyline::encode($new); // complete polyline
+
+    }
+
+    public function test()
+    {
+
+//       echo "sleeping";
+
+        //      echo date('h:i:s') . "<br>";
+
+// //sleep for 5 seconds
+
+        // sleep(5);
+
+// //start again
+
+        // echo date('h:i:s');
+
+        $origin = "Mundakkayam";
+
+        $destination = "Koruthodu";
+
+        $googleApiKey = 'AIzaSyC0rzowId2yv8feBxUpkssIX0zXEiMhn2A';
+
+        $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints";
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+
+            CURLOPT_URL => $url,
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_ENCODING => "",
+
+            CURLOPT_MAXREDIRS => 10,
+
+            CURLOPT_TIMEOUT => 30,
+
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+
+            CURLOPT_CUSTOMREQUEST => "GET",
+
+            CURLOPT_HTTPHEADER => [
+
+                "cache-control: no-cache",
+
+            ],
+
+        ]);
+
+        $response = curl_exec($curl);
+
+        $array = json_decode($response, true);
+
+        $legs = $array['routes'][0]['legs'];
+
+        echo "<pre>";
+
+        foreach ($legs as $leg) {
+
+            echo "Distane " . $leg['distance']['text'] . "<br>";
+
+            echo "Duration " . $leg['duration']['text'] . "<br>";
+
+            echo "Start " . $leg['start_location']['lat'] . "   " . $leg['start_location']['lng'] . "<br>";
+
+            echo "end " . $leg['end_location']['lat'] . "   " . $leg['end_location']['lng'] . "<br>";
+
+            // print_r($leg);
+
+        }
+
+        $steps = $legs[0]['steps'];
+
+        $poly = array();
+
+        foreach ($steps as $locations) {
+
+            echo $locations['polyline']['points'] . "<br>";
+
+            $points = \Polyline::decode($locations['polyline']['points']);
+
+            $poly[] = \Polyline::pair($points);
+
+        }
+
+//   print_r($poly);
+
+        $new = array_reduce($poly, 'array_merge', array());
+
+        echo "<br> new <br>";
+
+        print_r($new);
+
+        $encoded = \Polyline::encode($new);
+
+        echo "new " . $encoded;
+
+        $testing = $new['607'];
+
+        $km = $this->distanceCalculation($testing['0'], $testing['1'], "9.472899", "76.959597"); // Calculate distance in kilometres (default)
+
+        $ckm = $this->cwGetDistanceOpt($testing['0'], $testing['1'], "9.472899", "76.959597");
+
+        echo "<br>" . $km . "<br>";
+
+        echo "<br>" . $ckm . "<br>";
+
+// $points = \Polyline::decode($poly[2]);
+
+        // $points = \Polyline::pair($points);
+
+// print_r($points);
+
+    }
+
+    public function cwGetDistanceOpt($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo)
+    {
+
+        $rad = M_PI / 180;
+
+        //Calculate distance from latitude and longitude
+
+        $theta = $longitudeFrom - $longitudeTo;
+
+        $dist = sin($latitudeFrom * $rad) * sin($latitudeTo * $rad) + cos($latitudeFrom * $rad) * cos($latitudeTo * $rad) * cos($theta * $rad);
+
+        $Result = acos($dist) / $rad * 60 * 1.853;
+
+        return round($Result, 2);
+
+    }
+
+    public function distanceCalculation($point1_lat, $point1_long, $point2_lat, $point2_long, $unit = 'km', $decimals = 2)
+    {
+
+        // Calculate the distance in degrees
+
+        $degrees = rad2deg(acos((sin(deg2rad($point1_lat)) * sin(deg2rad($point2_lat))) + (cos(deg2rad($point1_lat)) * cos(deg2rad($point2_lat)) * cos(deg2rad($point1_long - $point2_long)))));
+
+        // Convert the distance in degrees to the chosen unit (kilometres, miles or nautical miles)
+
+        switch ($unit) {
+
+            case 'km':
+
+                $distance = $degrees * 111.13384; // 1 degree = 111.13384 km, based on the average diameter of the Earth (12,735 km)
+
+                break;
+
+            case 'mi':
+
+                $distance = $degrees * 69.05482; // 1 degree = 69.05482 miles, based on the average diameter of the Earth (7,913.1 miles)
+
+                break;
+
+            case 'nmi':
+
+                $distance = $degrees * 59.97662; // 1 degree = 59.97662 nautic miles, based on the average diameter of the Earth (6,876.3 nautical miles)
+
+        }
+
+        return round($distance, $decimals);
+
+    }
+
+    public function testjson()
+    {
+
+        $origin = "Mundakkayam";
+
+        $destination = "Koruthodu";
+
+        $googleApiKey = 'AIzaSyC0rzowId2yv8feBxUpkssIX0zXEiMhn2A';
+
+        $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints";
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+
+            CURLOPT_URL => $url,
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_ENCODING => "",
+
+            CURLOPT_MAXREDIRS => 10,
+
+            CURLOPT_TIMEOUT => 30,
+
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+
+            CURLOPT_CUSTOMREQUEST => "GET",
+
+            CURLOPT_HTTPHEADER => [
+
+                "cache-control: no-cache",
+
+            ],
+
+        ]);
+
+        $response = curl_exec($curl);
+
+        echo $response;
+
+    }
+
+    public function testseclast()
+    {
+
+        $origin = "kesavadasapuram";
+
+        $destination = "peroorkada";
+
+        $googleApiKey = 'AIzaSyC0rzowId2yv8feBxUpkssIX0zXEiMhn2A';
+
+        $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints=pattom";
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+
+            CURLOPT_URL => $url,
+
+            CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_ENCODING => "",
+
+            CURLOPT_MAXREDIRS => 10,
+
+            CURLOPT_TIMEOUT => 30,
+
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+
+            CURLOPT_CUSTOMREQUEST => "GET",
+
+            CURLOPT_HTTPHEADER => [
+
+                "cache-control: no-cache",
+
+            ],
+
+        ]);
+
+        $response = curl_exec($curl);
+
+        echo $response;
+
+    }
+
+    public function testworking()
+    {
+
+        $callToGoogle = curl_init();
+
+        $googleApiKey = 'AIzaSyC0rzowId2yv8feBxUpkssIX0zXEiMhn2A';
+
+        $origin = "kollam";
+
+        $destination = "kottayam";
+
+        curl_setopt_array(
+
+            $callToGoogle,
+
+            array(
+
+                CURLOPT_URL => 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey,
+
+                CURLOPT_CUSTOMREQUEST => "GET",
+
+                CURLOPT_RETURNTRANSFER => true,
+
+            )
+
+        );
+
+        $response = curl_exec($callToGoogle);
+
+        curl_close($callToGoogle);
+
+        echo $response;
+
+    }
+
+    public function workingtest()
+    {
+
+        $callToGoogle = curl_init();
+
+        $googleApiKey = 'AIzaSyC0rzowId2yv8feBxUpkssIX0zXEiMhn2A';
+
+        $origin = "kollam";
+
+        $destination = "kottayam";
+
+        curl_setopt_array(
+
+            $callToGoogle,
+
+            array(
+
+                CURLOPT_URL => 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&mode=driving&key=' . $googleApiKey,
+
+                CURLOPT_CUSTOMREQUEST => "GET",
+
+                CURLOPT_RETURNTRANSFER => true,
+
+            )
+
+        );
+
+        $response = curl_exec($callToGoogle);
+
+        curl_close($callToGoogle);
+
+        echo $response;
+
+    }
+
+}
