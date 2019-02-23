@@ -66,7 +66,7 @@ function AndroidPush($deviceToken = '', $message = array()) {
 
 	$url = 'https://android.googleapis.com/gcm/send';
 
-	$serverApiKey = "REDACTED"; //"Your Api key"
+	$serverApiKey = "REDACTED_DEVICE_TOKEN"; //"Your Api key"
 
 	$headers = array(
 
@@ -188,7 +188,7 @@ function AndroidPush_rider($deviceToken = '', $message = array()) {
 
 	$url = 'https://android.googleapis.com/gcm/send';
 
-	$serverApiKey = "REDACTED"; //"Your Api key"
+	$serverApiKey = "REDACTED_DEVICE_TOKEN"; //"Your Api key"
 
 	$headers = array(
 

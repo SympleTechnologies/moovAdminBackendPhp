@@ -15,5 +15,8 @@ class User extends Model {
 	const CREATED_AT = 'u_created_at';
 	const UPDATED_AT = 'u_last_modified';
 //public $timestamps = false;
+	public function school() {
+		return $this->belongsTo('src\app\Models\School', 'u_edu_institution');
+	}
 
 }
