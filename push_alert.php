@@ -66,7 +66,7 @@ function AndroidPush($deviceToken = '', $message = array()) {
 
 	$url = 'https://android.googleapis.com/gcm/send';
 
-	$serverApiKey = "AIzaSyDYYCSgr2xxzo_gTf17MaJUEspsLELnTJk"; //"Your Api key"
+	$serverApiKey = "AAAAYVJu5s0:APA91bEPVQe8D5lhjulHl8xrMJuNUdf0mLa4z35gQDpsh9i-7KbFAZcaGEFQ6LDgm4EANpymAhVW3jAoU56BSLVJ2awG1GszMoDnF93LPkX53s8WwG18oNOdQOaNAzZvlbqn3Vg6Zwjt"; //"Your Api key"
 
 	$headers = array(
 
@@ -188,7 +188,7 @@ function AndroidPush_rider($deviceToken = '', $message = array()) {
 
 	$url = 'https://android.googleapis.com/gcm/send';
 
-	$serverApiKey = "AIzaSyDYYCSgr2xxzo_gTf17MaJUEspsLELnTJk"; //"Your Api key"
+	$serverApiKey = "AAAAYVJu5s0:APA91bEPVQe8D5lhjulHl8xrMJuNUdf0mLa4z35gQDpsh9i-7KbFAZcaGEFQ6LDgm4EANpymAhVW3jAoU56BSLVJ2awG1GszMoDnF93LPkX53s8WwG18oNOdQOaNAzZvlbqn3Vg6Zwjt"; //"Your Api key"
 
 	$headers = array(
 
