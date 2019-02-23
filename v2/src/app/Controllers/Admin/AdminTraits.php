@@ -60,6 +60,9 @@ trait AdminTraits {
 			$user->u_email = $this->input['email'];
 			$user->u_role = (int) $this->input['role'];
 			$user->u_password = $this->input['password'];
+			if ($this->input['role'] === self::DRIVER) {
+				$user->u_type = 4;
+			}
 			if (!empty($this->input['school'])) {
 				$user->u_edu_institution = $this->input['school'];
 			}
@@ -84,7 +87,7 @@ trait AdminTraits {
 			]));
 		} catch (\Exception $e) {
 			$res->getBody()->write(json_encode([
-				'status' => 400, 'message' => 'There was a problem adding user. Please ensure email doesn\'st already exist.',
+				'status' => 400, 'message' => "There was a problem adding user. Please ensure email doesn't already exist.",
 				'debug' => $e->getMessage(),
 			]));
 		}

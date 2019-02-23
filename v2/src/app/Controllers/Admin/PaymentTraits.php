@@ -195,11 +195,12 @@ trait PaymentTraits {
 			];*/
 
 			$user = Users::where('u_email', $user_email)->first();
+			//print_r(json_encode($user));
 			if (!$user || $user->u_type != self::DRIVER) {
 				$output = array(
 					"status" => false,
-					'user' => $user,
-					'driver' => self::DRIVER,
+					// 'user' => $user,
+					// 'driver' => self::DRIVER,
 					"message" => "Driver with that email address does not exists!",
 				);
 				return $res->getBody()->write(json_encode($output));
