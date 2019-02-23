@@ -409,7 +409,7 @@ trait PaymentTraits {
 		]);
 		//$this->logger->Info(json_encode($output));
 		if (!$output['status']) {
-			$this->rollBackTransaction();
+			$this->rollbackTransaction();
 		}
 		/*$output = array(
 				"status" => true,

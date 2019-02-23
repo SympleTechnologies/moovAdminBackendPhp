@@ -18,6 +18,10 @@ trait TransactionTrait {
 		$connection = $this->db->getConnection();
 		$connection->commit();
 	}
+	public function rollbackTransaction() {
+		$connection = $this->db->getConnection();
+		$connection->rollback();
+	}
 }
 
 ?>
