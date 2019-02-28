@@ -2,63 +2,54 @@
 
 function iOSPush($deviceToken, $message) {
 
-	// Put your device token here (without spaces):
+	$url = "https://fcm.googleapis.com/fcm/send";
 
-	$deviceToken = $deviceToken;
+	$serverApiKey = "AIzaSyD2g3p8L7YBDFtJxCzehtDia4i_e_Tt47U"; //"Your Api key"
 
-	//echo $deviceToken."<br>";
+	$headers = array(
 
-	// Put your private key's passphrase here:
+		'Content-Type:application/json',
 
-	$passphrase = 'sics';
+		'Authorization:key=' . $serverApiKey,
 
-	// Put your alert message here:
+	);
+	//print_r($data);
 
-	$message = $message;
+	$notification = [
+		'title' => $title,
+		'text' => $body,
+		'sound' => 'default',
+		'badge' => '1',
+	];
+	$arrayToSend = [
+		"mutable_content" => true,
+		'data' => [
+			'ride_id' => $message['ride_id'],
+			'trip_id' => $message['trip_id'],
+		],
+		'to' => $token,
+		'notification' => $notification,
+		'priority' => 'high',
+	];
+	$json = json_encode($arrayToSend);
+	$headers = array();
+	$headers[] = 'Content-Type: application/json';
+	$headers[] = 'Authorization: key=' . $serverKey;
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
 
-	////////////////////////////////////////////////////////////////////////////////
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST,
 
-	$ctx = stream_context_create();
-
-	stream_context_set_option($ctx, 'ssl', 'local_cert', '../c_driver.pem');
-
-	stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
-
-	$fp = stream_socket_client(
-
-		//'ssl://gateway.sandbox.push.apple.com:2195', $err,
-
-		// 'ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
-		'ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
-
-	if (!$fp) {
-
-		exit("Failed to connect: $err $errstr" . PHP_EOL);
-
-	}
-
-	$body['aps'] = $message;
-
-	//print_r($body);
-
-	$payload = json_encode($body);
-
-	$msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
-
-	$result = fwrite($fp, $msg, strlen($msg));
-
-	// if (!$result){
-
-	// echo 'Message not delivered'.PHP_EOL;
-	// }
-
-	// else{
-
-	//      echo 'Message successfully delivered' . PHP_EOL;
-	//      print_r($result);
-	// }
-
-	fclose($fp);
+		"POST");
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//Send the request
+	$response = curl_exec($ch);
+//Close request
+	/*if ($response === FALSE) {
+	die('FCM Send Error: ' . curl_error($ch));
+}*/
+	curl_close($ch);
 
 }
 
@@ -125,51 +116,54 @@ function AndroidPush($deviceToken = '', $message = array()) {
 }
 
 function iOSPush_rider($deviceToken, $message) {
+	$url = "https://fcm.googleapis.com/fcm/send";
 
-	// Put your device token here (without spaces):
+	$serverApiKey = "AIzaSyD2g3p8L7YBDFtJxCzehtDia4i_e_Tt47U"; //"Your Api key"
 
-	$deviceToken = $deviceToken;
+	$headers = array(
 
-	//echo $deviceToken."<br>";
+		'Content-Type:application/json',
 
-	// Put your private key's passphrase here:
+		'Authorization:key=' . $serverApiKey,
 
-	$passphrase = 'sics';
+	);
+	//print_r($data);
 
-	// Put your alert message here:
+	$notification = [
+		'title' => $title,
+		'text' => $body,
+		'sound' => 'default',
+		'badge' => '1',
+	];
+	$arrayToSend = [
+		"mutable_content" => true,
+		'data' => [
+			'ride_id' => $message['ride_id'],
+			'trip_id' => $message['trip_id'],
+		],
+		'to' => $token,
+		'notification' => $notification,
+		'priority' => 'high',
+	];
+	$json = json_encode($arrayToSend);
+	$headers = array();
+	$headers[] = 'Content-Type: application/json';
+	$headers[] = 'Authorization: key=' . $serverKey;
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
 
-	$message = $message;
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST,
 
-	$ctx = stream_context_create();
-
-	stream_context_set_option($ctx, 'ssl', 'local_cert', '../c_user.pem');
-
-	stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
-
-	$fp = stream_socket_client(
-
-		//'ssl://gateway.sandbox.push.apple.com:2195', $err,
-		//ssl: //gateway.push.apple.com:2195
-
-		'ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
-
-	if (!$fp) {
-
-		exit("Failed to connect: $err $errstr" . PHP_EOL);
-
-	}
-
-	$body['aps'] = $message;
-
-	//print_r($body);
-
-	$payload = json_encode($body);
-
-	$msg = chr(0) . pack('n', 32) . pack('H*', $deviceToken) . pack('n', strlen($payload)) . $payload;
-
-	$result = fwrite($fp, $msg, strlen($msg));
-
-	fclose($fp);
+		"POST");
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//Send the request
+	$response = curl_exec($ch);
+//Close request
+	/*if ($response === FALSE) {
+	die('FCM Send Error: ' . curl_error($ch));
+}*/
+	curl_close($ch);
 
 //  if (!$result){
 
