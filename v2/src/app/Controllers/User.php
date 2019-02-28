@@ -350,9 +350,11 @@ class User extends Api_Controller {
 	}
 
 	public function getAllUsers() {
-		$users = Users::all('id', 'username', 'profile_pic');
+		$users = Users::all('u_id', 'u_first_name', 'u_image');
 
-		return $this->response->withJson($users);
+		return $this->response->withJson([
+			'data' => $users,
+		]);
 	}
 
 	public function moveUploadedFile($directory, UploadedFile $uploadedFile) {

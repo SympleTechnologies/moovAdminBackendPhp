@@ -164,7 +164,7 @@ $dd->save();*/
 
 				"status" => false,
 
-				"message" => "An error occured, please tr again",
+				"message" => "An error occured, please try again!",
 
 			);
 
