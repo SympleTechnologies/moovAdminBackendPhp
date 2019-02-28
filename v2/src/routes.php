@@ -67,6 +67,10 @@ $env['route'] = array(
 
 		"register" => "/auth/register",
 
+		"social_registration" => "/auth/social_registration",
+
+		"social_login" => "/auth/social_login",
+
 		"select_college" => "/auth/select_college",
 
 		"select_type" => "/auth/select_user_type",
@@ -81,10 +85,6 @@ $env['route'] = array(
 		"ride_book_future" => "/ride/book_future",
 
 		"ride_add_rating" => "/ride/add_rating",
-
-		"social_login" => "/auth/social_login",
-
-		"social_login" => "/auth/social_login",
 
 		"view_user_details" => "/view/details/user/{id}",
 
@@ -185,6 +185,8 @@ $r_crons = $env['route']['crons'];
 
 $app->post($r_user['login'], 'Auth:login');
 $app->post($r_user['check_email'], 'Auth:check_email');
+
+$app->post($r_user['social_registration'], 'Auth:register');
 
 $app->post($r_user['social_login'], 'Auth:social_login');
 

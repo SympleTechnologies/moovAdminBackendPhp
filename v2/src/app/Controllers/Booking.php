@@ -71,9 +71,9 @@ class Booking extends Api_Controller {
 
 			->first();
 
-		$peekHours = $this->db->table('ride_peak_hours')
+		/*$peekHours = $this->db->table('ride_peak_hours')
 
-			->select("rph_from as start", "rph_to as to")->get()->toArray();
+			->select("rph_from as start", "rph_to as to")->get()->toArray();*/
 
 // print_r(collect($peekHours)->toArray());
 
@@ -128,8 +128,8 @@ class Booking extends Api_Controller {
 
 			"message" => "Amount calculated",
 			"distance" => $total_distance,
-			'peek' => $peekHours,
-			"tst" => "$total_distance * $per_km + $rate",
+			//'peek' => $peekHours,
+			//"tst" => "$total_distance * $per_km + $rate",
 			//    "now" =>new \Datetime(),
 
 			"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
@@ -675,7 +675,7 @@ class Booking extends Api_Controller {
 
 						"status" => false,
 
-						"message" => "No drivers found near you, please try again",
+						"message" => "No drivers found near you, please try again!",
 
 						"links" => array(
 

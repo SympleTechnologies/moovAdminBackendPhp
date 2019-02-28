@@ -57,7 +57,6 @@ class Auth extends Api_Controller {
 		$deviceType = $this->input['device_type'];
 
 		$appVersion = $this->input['app_version'];
-
 		$count = Users::where($userdata)->count();
 
 		if ($count > 0) {
@@ -625,7 +624,7 @@ class Auth extends Api_Controller {
 
 						"status" => true,
 
-						"message" => "A new password will be send to you if mail exist in our server",
+						"message" => "A new password will be sent to you if mail exists in our server",
 
 					);
 
