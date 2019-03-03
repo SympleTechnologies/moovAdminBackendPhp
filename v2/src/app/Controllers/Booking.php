@@ -371,11 +371,13 @@ class Booking extends Api_Controller {
 
 		if (empty($polyline)) {
 
+			$this->logger->Error('Map Data', $mapData);
+			$this->logger->Error('Request parameter', $this->input);
 			$booking_response = array(
 
 				"status" => false,
 
-				"message" => "An error occured while booking your ride!",
+				"message" => "An error occured while booking your ride, please ensure that you entered a valid address!",
 
 				"links" => array(
 
