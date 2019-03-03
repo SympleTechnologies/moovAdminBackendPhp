@@ -284,7 +284,7 @@ class User extends Api_Controller {
 
 			"data" => array("user_details" => $users[0]),
 
-			"message" => "Login success",
+			"message" => "Fetched successfully",
 
 			"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
 
@@ -302,7 +302,7 @@ class User extends Api_Controller {
 	}
 	public function getUserByEmail($request, $response, $args) {
 		$user = Users::select('u_id as id', 'u_first_name as first_name', 'u_last_name as last_name')->where('u_email', $args['email'])->first();
-
+		echo 'Hello world';
 		$result = array(
 
 			"status" => $user ? true : false,
