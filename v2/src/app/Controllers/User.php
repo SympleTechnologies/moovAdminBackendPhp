@@ -302,7 +302,6 @@ class User extends Api_Controller {
 	}
 	public function getUserByEmail($request, $response, $args) {
 		$user = Users::select('u_id as id', 'u_first_name as first_name', 'u_last_name as last_name')->where('u_email', $args['email'])->first();
-		echo 'Hello world';
 		$result = array(
 
 			"status" => $user ? true : false,
