@@ -776,7 +776,7 @@ class Auth extends Api_Controller {
 
 					"status" => true,
 
-					"message" => "An email exist",
+					"message" => "Email exists",
 
 				);
 
@@ -786,7 +786,7 @@ class Auth extends Api_Controller {
 
 					"status" => false,
 
-					"message" => "No emails found", //
+					"message" => "Email not found", //
 
 				);
 
