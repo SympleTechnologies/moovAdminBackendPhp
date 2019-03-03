@@ -1,17 +1,16 @@
 <?php
 $ENVIRONMENT_VARIABLES = [
 
-	//'DB_NAME' => 'themoova_pp_live',
-	// 'DB_NAME' => 'themoova_pp_test',
-	// 'DB_USER' => 'root',
-	// 'DB_PASS' => '',
-	// 'DB_HOST' => 'localhost',
+	'DB_NAME' => 'themoova_pp_test',
+	'DB_USER' => 'root',
+	'DB_PASS' => '',
+	'DB_HOST' => 'localhost',
 
 	// Heroku config
-	'DB_NAME' => 'REDACTED',
-	'DB_USER' => 'REDACTED',
-	'DB_PASS' => 'REDACTED',
-	'DB_HOST' => 'REDACTED',
+	// 'DB_NAME' => 'REDACTED',
+	// 'DB_USER' => 'REDACTED',
+	// 'DB_PASS' => 'REDACTED',
+	// 'DB_HOST' => 'REDACTED',
 
 	'MAIL_DRIVER' => 'log'
 	, 'MAIL_HOST' => 'smtp.gmail.com'
