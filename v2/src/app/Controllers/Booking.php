@@ -71,9 +71,9 @@ class Booking extends Api_Controller {
 
 			->first();
 
-		/*$peekHours = $this->db->table('ride_peak_hours')
+		$peekHours = $this->db->table('ride_peak_hours')
 
-			->select("rph_from as start", "rph_to as to")->get()->toArray();*/
+			->select("rph_from as start", "rph_to as to")->get()->toArray();
 
 // print_r(collect($peekHours)->toArray());
 
