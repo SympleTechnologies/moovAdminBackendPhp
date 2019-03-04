@@ -262,7 +262,7 @@ $app->any($r_global['get_transaction_callback'], 'Wallet:call_back_url');
 
 $app->any($r_global['get_transaction_callback_trailing'], 'Wallet:call_back_url');
 
-$app->any($r_global['verify_transaction'], 'Wallet:verify_transaction');
+$app->post($r_global['verify_transaction'], 'Wallet:verify_transaction');
 
 $app->get($r_global['balance'], "Wallet:view_balance"); //->add($amw);
 
