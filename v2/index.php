@@ -3,9 +3,7 @@
 require '../vendor/autoload.php';
 // date_default_timezone_set ('Asia/Kolkata'); //Africa/Lagos
 date_default_timezone_set('Africa/Lagos'); //Africa/Lagos
-header("Access-Control-Allow-Origin:*");
-header("Access-Control-Allow-Methods:GET,POST,PUT,DELETE,PATCH");
-/*header("Access-Control-Allow-Headers:Content-Type,X-XSRF-TOKEN,token");*/
+
 $settings = require 'src/config/settings.php';
 $app = new \Slim\App($settings);
 require '../jfunctions.php';
