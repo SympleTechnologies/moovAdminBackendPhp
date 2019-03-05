@@ -10,10 +10,10 @@ $container['db'] = function ($container) {
 	return $capsule;
 };
 
-$container['profile_pic_upload'] = "../../public/uploads/userpic/";
-$container['profile_pic_upload_croped'] = "../../public/uploads/userpic/croped/";
-$container['profile_pic_upload_croped_100'] = "../../public/uploads/userpic/croped/100/";
-$container['profile_pic_upload_croped_200'] = "../../public/uploads/userpic/croped/200/";
+$container['profile_pic_upload'] = "../public/uploads/userpic/";
+$container['profile_pic_upload_croped'] = "../public/uploads/userpic/croped/";
+$container['profile_pic_upload_croped_100'] = "../public/uploads/userpic/croped/100/";
+$container['profile_pic_upload_croped_200'] = "../public/uploads/userpic/croped/200/";
 
 $container['profile_pic_upload_url'] = "/public/uploads/userpic/";
 $container['profile_pic_upload_croped_100_url'] = "/public/uploads/userpic/croped/100/";
