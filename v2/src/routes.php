@@ -143,7 +143,7 @@ $env['route'] = array(
 
 		"update_driver_details" => '/update/driver_details',
 
-		"update_profile_pic" => '/update/profile_pic',
+		"update_profile_pic" => '/update/profile_pic/{user_id}',
 
 		"update_email" => '/update/email',
 		"update_bank_details" => '/update/bank',
