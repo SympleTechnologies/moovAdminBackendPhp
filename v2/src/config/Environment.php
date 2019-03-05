@@ -9,6 +9,21 @@ $env = $container['environment'];
 $re = $container['request'];
 
 //app details
+function scheme() {
+	if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
+		$uri = 'https://';
+	} else {
+		$uri = 'http://';
+	}
+	return $uri;
+}
+function origin_url() {
+	//scheme http
+	//host localhost
+	//then the path to the dir
+	$port = $_SERVER["SERVER_PORT"] == 80 ? '' : ':' . $_SERVER["SERVER_PORT"];
+	return scheme() . $_SERVER["HTTP_HOST"] . $port; //. dirname($_SERVER['SCRIPT_NAME']);
+}
 
 $env['app_name'] = 'Sample app';
 
@@ -20,7 +35,7 @@ $env['app_versions'] = ['v1'];
 
 $env['app_c_version_url'] = $env['app_url'] . "/" . $env['app_version'];
 
-$env['app_url_live'] = 'https://moov-php-backend-staging.herokuapp.com';
+$env['app_url_live'] = origin_url(); //'https://moov-php-backend-staging.herokuapp.com';
 
 $env['oauth_secret_key'] = '&^moovApp^&';
 
