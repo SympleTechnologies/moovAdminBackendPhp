@@ -37,8 +37,8 @@ class JAuth extends Api_Controller {
 		return $response;
 	}
 	public function key_check() {
-		$headers = apache_request_headers();
-		$token = $headers['token'];
+		$headers = getallheaders();
+		$token = $headers['Token'];
 		$tokenstring = $this->ncrypt->decrypt($token);
 		$tokendata = explode(",", unserialize($tokenstring));
 		if (!empty($tokendata)) {
@@ -65,8 +65,7 @@ class JAuth extends Api_Controller {
 
 	public function key_failed() {
 		$headers = getallheaders();
-		var_dump(getallheaders());
-		$token = $headers['token'];
+		$token = $headers['Token'];
 		$output = array(
 			"status" => false,
 			"data" => array(),
