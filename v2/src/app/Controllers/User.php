@@ -166,8 +166,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function update_profile_picture() {
-		$userid = $this->input['userid'];
+	public function update_profile_picture($request, $response, $args) {
+		$userid = $args['user_id'];
 		if (!empty($userid)) {
 			$userdetails = Helper::get_user($userid);
 
@@ -178,31 +178,36 @@ class User extends Api_Controller {
 			$crop_dir_200 = $this->app->get('profile_pic_upload_croped_200');
 
 			$crop_dir_100 = $this->app->get('profile_pic_upload_croped_100');
+			is_dir($dir) || @mkdir($dir);
+			is_dir($crop_dir_100) || @mkdir($crop_dir_100);
+			is_dir($crop_dir_200) || @mkdir($crop_dir_200);
 
 			$uploadedFiles = $this->request->getUploadedFiles();
-
-			if (isset($uploadedFiles['image'])) {
+			if (isset($uploadedFiles['image']) && $uploadedFiles['image']->getError() === UPLOAD_ERR_OK) {
 				$uploadedFile = $uploadedFiles['image'];
 
-				if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-					$filename = $this->moveUploadedFile($dir, $uploadedFile);
+				$filename = $this->moveUploadedFile($dir, $uploadedFile);
 
-					// $this->response->write('uploaded ' . $filename . '<br/>');
+				// $this->response->write('uploaded ' . $filename . '<br/>');
 
-					$img = Image::make($dir . "" . $filename);
+				$img = Image::make($dir . "" . $filename);
 
-					$img->resize(200, 200);
+				$img->resize(200, 200);
 
-					$img->save($crop_dir_200 . "" . $filename);
+				$img->save($crop_dir_200 . "" . $filename);
 
-					$img->resize(100, 100);
+				$img->resize(100, 100);
 
-					$img->save($crop_dir_100 . "" . $filename);
-				} else {
-					$filename = $uimage;
-				}
+				$img->save($crop_dir_100 . "" . $filename);
+
 			} else {
 				$filename = $uimage;
+				$result = array(
+
+					"status" => false,
+					"message" => "Upload failed!",
+				);
+				return $this->response->withJson($result);
 			}
 
 			$this->db->table('users')
@@ -214,8 +219,6 @@ class User extends Api_Controller {
 					"u_image" => $filename,
 
 				]);
-
-			$userid = $this->input['userid'];
 
 			$userdetails = Helper::get_user($userid);
 
