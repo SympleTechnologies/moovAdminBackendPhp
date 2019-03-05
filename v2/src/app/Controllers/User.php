@@ -178,12 +178,12 @@ class User extends Api_Controller {
 			$crop_dir_200 = $this->app->get('profile_pic_upload_croped_200');
 
 			$crop_dir_100 = $this->app->get('profile_pic_upload_croped_100');
+
+			is_dir($dir) || mkdir($dir);
+			is_dir($crop_dir_100) || mkdir($crop_dir_100);
+			is_dir($crop_dir_200) || mkdir($crop_dir_200);
 			var_dump(realpath($dir));
 			die();
-			is_dir($dir) || @mkdir($dir);
-			is_dir($crop_dir_100) || @mkdir($crop_dir_100);
-			is_dir($crop_dir_200) || @mkdir($crop_dir_200);
-
 			$uploadedFiles = $this->request->getUploadedFiles();
 			if (isset($uploadedFiles['image']) && $uploadedFiles['image']->getError() === UPLOAD_ERR_OK) {
 				$uploadedFile = $uploadedFiles['image'];
