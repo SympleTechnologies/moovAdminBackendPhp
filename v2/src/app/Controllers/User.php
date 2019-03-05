@@ -10,15 +10,18 @@ use src\app\Models\BankDetails;
 use src\app\Models\User as Users;
 use src\config\Api_Controller;
 
-class User extends Api_Controller {
-	public function __construct($app) {
+class User extends Api_Controller
+{
+	public function __construct($app)
+	{
 		parent::__construct();
 	}
 
-	public function update_setting() {
-	}
+	public function update_setting()
+	{ }
 
-	public function update_driver_details() {
+	public function update_driver_details()
+	{
 		$userid = $this->input['userid'];
 
 		$result = $this->db->table('driver_details')
@@ -75,14 +78,15 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function update_profile() {
+	public function update_profile()
+	{
 		$userid = $this->input['userid'];
 
 		$userdetails = Helper::get_user($userid);
 
-		$uimage = $userdetails['u_image'];
+		/* $uimage = $userdetails['u_image']; */
 
-		$dir = $this->app->get('profile_pic_upload');
+		/* $dir = $this->app->get('profile_pic_upload');
 
 		$crop_dir_200 = $this->app->get('profile_pic_upload_croped_200');
 
@@ -112,7 +116,7 @@ class User extends Api_Controller {
 			}
 		} else {
 			$filename = $uimage;
-		}
+		} */
 
 		$this->db->table('users')
 
@@ -165,34 +169,74 @@ class User extends Api_Controller {
 
 		return $this->response->withJson($result);
 	}
-
-	public function update_profile_picture($request, $response, $args) {
+	private function uploadProfileImage($fromFilePath){
+		$dir = $this->app->get('profile_pic_upload');
+		$crop_dir_200 = $this->app->get('profile_pic_upload_croped_200');
+		$crop_dir_100 = $this->app->get('profile_pic_upload_croped_100');
+		$uploadedImageUrl=\Cloudinary\Uploader::upload(
+			$fromFilePath,[
+					"folder" => $dir, 
+					"overwrite" => true,
+					"resource_type" => "image"
+				])['secure_url'];
+		//$uploadedImageUrl=$uploadResult['url'];
+		$uploadedImageCrop100Url=\Cloudinary\Uploader::upload($uploadedImageUrl,[
+			"folder" => $crop_dir_100, 
+			"overwrite" => true,
+			"resource_type" => "image",
+			"width"=>100,
+			"quality"=>"auto",
+			"crop"=>"scale"
+		])['secure_url'];
+		$uploadedImageCrop200Url=\Cloudinary\Uploader::upload($uploadedImageUrl,[
+			"folder" => $crop_dir_200, 
+			"overwrite" => true,
+			"resource_type" => "image",
+			"width"=>200,
+			"quality"=>"auto",
+			"crop"=>"scale"
+		])['secure_url'];
+		return [
+			'url'=>$uploadedImageUrl,
+			'url_crop_100'=>$uploadedImageCrop100Url,
+			'url_crop_200'=>$uploadedImageCrop200Url
+		];
+	}
+	public function update_profile_picture($request, $response, $args)
+	{
 		$userid = $args['user_id'];
 		if (!empty($userid)) {
-			$userdetails = Helper::get_user($userid);
+			if(!Helper::get_user($userid)){
+				$result = array(
 
-			$uimage = $userdetails['u_image'];
-
-			$dir = $this->app->get('profile_pic_upload');
+					"status" => false,
+					"message" => "Please provide a valid user ID, user with that ID does not exist!",
+				);
+				return $this->response->withJson($result);
+			};
+			/* $dir = $this->app->get('profile_pic_upload');
 
 			$crop_dir_200 = $this->app->get('profile_pic_upload_croped_200');
 
-			$crop_dir_100 = $this->app->get('profile_pic_upload_croped_100');
+			$crop_dir_100 = $this->app->get('profile_pic_upload_croped_100'); */
 
-			is_dir($dir) || mkdir($dir);
+			/* is_dir($dir) || mkdir($dir);
 			is_dir($crop_dir_100) || mkdir($crop_dir_100);
-			is_dir($crop_dir_200) || mkdir($crop_dir_200);
-			var_dump(realpath($dir));
-			die();
+			is_dir($crop_dir_200) || mkdir($crop_dir_200); */
+			//var_dump(realpath($dir));
+
+			//var_dump(realpath($dir));
+			//die();
 			$uploadedFiles = $this->request->getUploadedFiles();
 			if (isset($uploadedFiles['image']) && $uploadedFiles['image']->getError() === UPLOAD_ERR_OK) {
-				$uploadedFile = $uploadedFiles['image'];
 
-				$filename = $this->moveUploadedFile($dir, $uploadedFile);
+				
+				
+				$uploadResult=$this->uploadProfileImage($_FILES["image"]["tmp_name"]);
 
 				// $this->response->write('uploaded ' . $filename . '<br/>');
 
-				$img = Image::make($dir . "" . $filename);
+				/* $img = Image::make($dir . "" . $filename);
 
 				$img->resize(200, 200);
 
@@ -200,10 +244,8 @@ class User extends Api_Controller {
 
 				$img->resize(100, 100);
 
-				$img->save($crop_dir_100 . "" . $filename);
-
+				$img->save($crop_dir_100 . "" . $filename); */
 			} else {
-				$filename = $uimage;
 				$result = array(
 
 					"status" => false,
@@ -217,28 +259,21 @@ class User extends Api_Controller {
 				->where('u_id', $userid)
 
 				->update([
-
-					"u_image" => $filename,
-
+					"u_image" => $uploadResult['url'],
+					"u_image_100" => $uploadResult['url_crop_100'],
+					"u_image_200" => $uploadResult['url_crop_200'],
 				]);
 
-			$userdetails = Helper::get_user($userid);
+			/* $userdetails = Helper::get_user($userid);
 
 			$uimage = $userdetails['u_image'];
-
-			$dir = $this->app->get('profile_pic_upload_url');
-
-			$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-
-			$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
-
 			$u_details = $this->get_user_details($userid);
 			$u_type = $u_details['u_type'];
 			if ($u_type == "3") {
 				$user_details = $u_details;
 			} else {
 				$user_details = $this->get_driver_details($userid);
-			}
+			} */
 
 			$users = Users::select('u_id', 'u_first_name', 'u_image')->where('u_id', $userid)->first();
 
@@ -258,11 +293,11 @@ class User extends Api_Controller {
 				"data" => array(
 					"user_details" => $users,
 
-					"user_pic_url" => $this->env['app_url_live'] . "" . $dir . "" . $uimage,
+					"user_pic_url" => $uploadResult['url'],
 
-					"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $uimage,
+					"user_pic_url_100" => $uploadResult['url_crop_100'],
 
-					"user_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $uimage,
+					"user_pic_url_200" => $uploadResult['url_crop_200'],
 
 				),
 
@@ -280,7 +315,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function getUser($request, $response, $args) {
+	public function getUser($request, $response, $args)
+	{
 		$users = Users::select('u_id', 'u_first_name', 'u_last_name', 'u_image')->where('u_id', $args['id'])->get();
 
 		$result = array(
@@ -305,7 +341,8 @@ class User extends Api_Controller {
 
 		//print_r($this->request->getQueryParam('id', $default = null));
 	}
-	public function getUserByEmail($request, $response, $args) {
+	public function getUserByEmail($request, $response, $args)
+	{
 		$user = Users::select('u_id as id', 'u_first_name as first_name', 'u_last_name as last_name')->where('u_email', $args['email'])->first();
 		$result = array(
 
@@ -330,13 +367,15 @@ class User extends Api_Controller {
 		//print_r($this->request->getQueryParam('id', $default = null));
 	}
 
-	public function getBankDetails($request, $response, $args) {
+	public function getBankDetails($request, $response, $args)
+	{
 		$users = BankDetails::select('bd_bank_code', 'bd_bank_name', 'bd_account_number', 'bd_account_name')->where('bd_user_id', $args['id'])->get();
 
 		if (isset($users)) {
 			$result = array(
 
-				"status" => true,
+
+						"status" => true,
 
 				"data" => array("user_details" => $users[0]),
 
@@ -353,7 +392,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function getAllUsers() {
+	public function getAllUsers()
+	{
 		$users = Users::all('u_id', 'u_first_name', 'u_image');
 
 		return $this->response->withJson([
@@ -361,7 +401,8 @@ class User extends Api_Controller {
 		]);
 	}
 
-	public function moveUploadedFile($directory, UploadedFile $uploadedFile) {
+	public function moveUploadedFile($directory, UploadedFile $uploadedFile)
+	{
 		$extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
 
 		$basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
@@ -373,7 +414,8 @@ class User extends Api_Controller {
 		return $filename;
 	}
 
-	public function driver_details($request, $response, $args) {
+	public function driver_details($request, $response, $args)
+	{
 		$dir = $this->app->get('profile_pic_upload_url');
 
 		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
@@ -442,7 +484,8 @@ class User extends Api_Controller {
 
 		$dd_array = array_map(function ($val) {
 			return is_null($val) ? "" : $val;
-		}, $details);
+	
+					}, $details);
 
 		$result = array(
 
@@ -454,7 +497,8 @@ class User extends Api_Controller {
 
 				"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $users->u_image,
 
-				"user_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image),
+				"us
+			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image),
 
 			"message" => "Driver detais",
 
@@ -465,7 +509,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function user_details($request, $response, $args) {
+	public function user_details($request, $response, $args)
+	{
 		$dir = $this->app->get('profile_pic_upload_url');
 
 		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
@@ -516,7 +561,8 @@ class User extends Api_Controller {
 
 				"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $users->u_image,
 
-				"user_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image),
+				"us
+			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image),
 
 			"message" => "User detais",
 
@@ -527,7 +573,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function update_email() {
+	public function update_email()
+	{
 		$userid = $this->input['userid'];
 
 		$newemail = $this->input['new_email'];
@@ -606,7 +653,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function update_password() {
+	public function update_password()
+	{
 		$userid = $this->input['userid'];
 
 		$newpassword = $this->input['new_password'];
@@ -685,7 +733,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function update_bank_details() {
+	public function update_bank_details()
+	{
 		$userid = $this->input['user_id'];
 		$bank_code = $this->input['bank_code'];
 		$bank_name = $this->input['bank_name'];
@@ -728,10 +777,10 @@ class User extends Api_Controller {
 			);
 		}
 		return $this->response->withJson($result);
-
 	}
 
-	public function otp() {
+	public function otp()
+	{
 		$OTP = randomPassword($this->env['otp_length']);
 
 		$userid = $this->input['userid'];
@@ -823,7 +872,8 @@ class User extends Api_Controller {
 		return $this->response->withJson($result);
 	}
 
-	public function send_sms($phone, $message) {
+	public function send_sms($phone, $message)
+	{
 		$client = new \Twilio\Rest\Client($this->env['twilio_sid'], $this->env['twilio_token']);
 
 		$message = $client->messages->create(
@@ -843,7 +893,8 @@ class User extends Api_Controller {
 		return $message->sid;
 	}
 
-	public function update_phone_with_otp() {
+	public function update_phone_with_otp()
+	{
 		$userid = $this->input['userid'];
 
 		$phone = $this->input['phone'];
@@ -929,7 +980,8 @@ class User extends Api_Controller {
 
 	//////No NEED ,only FOr iOS /////////////
 
-	public function get_driver_details($userid) {
+	public function get_driver_details($userid)
+	{
 		$dir = $this->app->get('profile_pic_upload_url');
 
 		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
@@ -1003,7 +1055,8 @@ class User extends Api_Controller {
 		return $dd_array;
 	}
 
-	public function get_user_details($userid) {
+	public function get_user_details($userid)
+	{
 		$dir = $this->app->get('profile_pic_upload_url');
 
 		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
