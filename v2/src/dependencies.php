@@ -10,14 +10,14 @@ $container['db'] = function ($container) {
 	return $capsule;
 };
 
-$container['profile_pic_upload'] = "../../manage/uploads/userpic/";
-$container['profile_pic_upload_croped'] = "../../manage/uploads/userpic/croped/";
-$container['profile_pic_upload_croped_100'] = "../../manage/uploads/userpic/croped/100/";
-$container['profile_pic_upload_croped_200'] = "../../manage/uploads/userpic/croped/200/";
+$container['profile_pic_upload'] = "../../public/uploads/userpic/";
+$container['profile_pic_upload_croped'] = "../../public/uploads/userpic/croped/";
+$container['profile_pic_upload_croped_100'] = "../../public/uploads/userpic/croped/100/";
+$container['profile_pic_upload_croped_200'] = "../../public/uploads/userpic/croped/200/";
 
-$container['profile_pic_upload_url'] = "/manage/uploads/userpic/";
-$container['profile_pic_upload_croped_100_url'] = "/manage/uploads/userpic/croped/100/";
-$container['profile_pic_upload_croped_200_url'] = "/manage/uploads/userpic/croped/200/";
+$container['profile_pic_upload_url'] = "/public/uploads/userpic/";
+$container['profile_pic_upload_croped_100_url'] = "/public/uploads/userpic/croped/100/";
+$container['profile_pic_upload_croped_200_url'] = "/public/uploads/userpic/croped/200/";
 
 $container['logger'] = function ($c) {
 	$logger = new \Monolog\Logger('moov_logger_v1');
