@@ -20,7 +20,7 @@ $env['app_versions'] = ['v1'];
 
 $env['app_c_version_url'] = $env['app_url'] . "/" . $env['app_version'];
 
-$env['app_url_live'] = "http://themoovapp.com";
+$env['app_url_live'] = 'https://moov-php-backend-staging.herokuapp.com';
 
 $env['oauth_secret_key'] = '&^moovApp^&';
 
