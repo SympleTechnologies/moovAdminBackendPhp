@@ -16,8 +16,8 @@
         "paragonie/random_compat": "^9.99",
         "mukto90/ncrypt": "dev-master",
         "jstayton/google-maps-geocoder": "^2.4",
-        "slim/pdo": "^1.10"
-        
+        "slim/pdo": "^1.10",
+        "cloudinary/cloudinary_php": "^1.13"
     },
     "autoload": {
         "psr-4": {

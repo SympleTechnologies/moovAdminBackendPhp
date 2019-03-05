@@ -58,6 +58,10 @@ trait AdminTraits {
 			$user->u_first_name = $this->input['firstname'];
 			$user->u_last_name = $this->input['lastname'];
 			$user->u_email = $this->input['email'];
+			$user->u_phone_country = $this->input['phone_country'];
+			$user->u_phone = $this->input['phone_number'];
+			$user->u_gender = $this->input['gender'];
+
 			$user->u_role = (int) $this->input['role'];
 			$user->u_password = $this->input['password'];
 			if ($this->input['role'] === self::DRIVER) {
@@ -78,7 +82,10 @@ trait AdminTraits {
 				// also add driver to driver details
 				$dd = new DriverDetails();
 				$dd->dd_driver_id = $user->u_id;
+				$dd->car_colour = $this->input['car_colour'];
+				$dd->dd_birth_day = $this->input['dob'];
 				$dd->dd_admin_approved = 0;
+				$dd->dd_car_active = 1;
 				$dd->save();
 			}
 
