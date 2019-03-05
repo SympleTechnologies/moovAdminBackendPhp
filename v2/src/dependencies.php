@@ -2,6 +2,13 @@
 
 $container = $app->getContainer();
 
+
+\Cloudinary::config(array( 
+	"cloud_name" => "moov-api", 
+	"api_key" => "322631579761977", 
+	"api_secret" => "xq8CSlfFFxGT6q_6vffpJUEtkIg" 
+  ));
+
 $container['db'] = function ($container) {
 	$capsule = new \Illuminate\Database\Capsule\Manager;
 	$capsule->addConnection($container['settings']['db']);
@@ -10,10 +17,10 @@ $container['db'] = function ($container) {
 	return $capsule;
 };
 
-$container['profile_pic_upload'] = "../public/uploads/userpic/";
-$container['profile_pic_upload_croped'] = "../public/uploads/userpic/croped/";
-$container['profile_pic_upload_croped_100'] = "../public/uploads/userpic/croped/100/";
-$container['profile_pic_upload_croped_200'] = "../public/uploads/userpic/croped/200/";
+$container['profile_pic_upload'] = "public/uploads/userpic/";
+$container['profile_pic_upload_croped'] = "public/uploads/userpic/croped/";
+$container['profile_pic_upload_croped_100'] = "public/uploads/userpic/croped/100/";
+$container['profile_pic_upload_croped_200'] = "public/uploads/userpic/croped/200/";
 
 $container['profile_pic_upload_url'] = "/public/uploads/userpic/";
 $container['profile_pic_upload_croped_100_url'] = "/public/uploads/userpic/croped/100/";
