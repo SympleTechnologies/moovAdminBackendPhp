@@ -4,6 +4,9 @@ require '../vendor/autoload.php';
 // date_default_timezone_set ('Asia/Kolkata'); //Africa/Lagos
 date_default_timezone_set('Africa/Lagos'); //Africa/Lagos
 require 'src/config/env.php';
+if(!get_env('DEBUG')){
+	error_reporting(0);
+}
 $settings = require 'src/config/settings.php';
 print_r($settings);
 $app = new \Slim\App($settings);
