@@ -3,5 +3,4 @@ logs/
 vendor/
 error_log
 v2/error_log.old
-v2/src/config/env.php
-v2/src/config/env.php
+v2/.env
