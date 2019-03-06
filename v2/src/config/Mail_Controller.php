@@ -5,8 +5,6 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use src\config\Api_Controller;
 
-require_once 'env.php';
-
 class Mail_Controller extends Api_Controller {
 	private $sender_email;
 	private $sender_email_password;
