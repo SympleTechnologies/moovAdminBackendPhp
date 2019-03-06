@@ -29,17 +29,17 @@ $env['app_name'] = 'Sample app';
 
 $env['app_url'] = $re->getUri()->getBaseUrl();
 
-$env['app_version'] = 'v1';
+$env['app_version'] = 'v2';
 
-$env['app_versions'] = ['v1'];
+$env['app_versions'] = ['v2'];
 
 $env['app_c_version_url'] = $env['app_url'] . "/" . $env['app_version'];
 
 $env['app_url_live'] = origin_url(); //'https://moov-php-backend-staging.herokuapp.com';
 
-$env['oauth_secret_key'] = 'REDACTED';
+/* $env['oauth_secret_key'] = 'REDACTED';
 
-$env['oauth_secret_iv'] = 'REDACTED';
+$env['oauth_secret_iv'] = 'REDACTED'; */
 
 $env['otp_length'] = 5;
 
@@ -55,11 +55,11 @@ $env['booking_completed'] = 'completed';
 $env['paystack_secret_test'] = 'REDACTED';
 
 $env['paystack_public'] = 'REDACTED';*/
-$env['paystack_secret'] = 'REDACTED';
+/* $env['paystack_secret'] = 'REDACTED';
 
 $env['paystack_secret_test'] = 'REDACTED';
 
-$env['paystack_public'] = 'REDACTED';
+$env['paystack_public'] = 'REDACTED'; */
 
 //Live
 /*
@@ -70,9 +70,9 @@ $env['paystack_secret_test'] = 'REDACTED';
 $env['paystack_public'] = 'REDACTED';
  */
 
-$env['twilio_sid'] = 'REDACTED';
+/* $env['twilio_sid'] = 'REDACTED';
 
-$env['twilio_token'] = 'REDACTED';
+$env['twilio_token'] = 'REDACTED'; */
 
 // $env['google_map_api'] = 'REDACTED';
 
@@ -98,7 +98,14 @@ define("DB_PASSWORD", 'REDACTED');
 
 }*/
 
-$env['google_map_api'] = 'REDACTED'; //live from client
+/* $env['google_map_api'] = 'REDACTED'; //live from client */
+foreach ($ENVIRONMENT_VARIABLES as $key => $value) {
+	# code...
+	$env[$key]=$value;
+}
+
+$ENVIRONMENT_VARIABLES=$env;
+
 
 // test keys
 

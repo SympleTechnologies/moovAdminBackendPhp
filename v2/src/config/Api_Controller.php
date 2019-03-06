@@ -1,7 +1,6 @@
 <?php
 
 namespace src\config;
-require_once "env.php";
 
 class Api_Controller {
 	public $app, $db, $request, $response, $logger, $env;

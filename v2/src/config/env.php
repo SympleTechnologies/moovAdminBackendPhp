@@ -7,7 +7,7 @@ $ENVIRONMENT_VARIABLES = [
 	// 'DB_HOST' => 'localhost',
 
 	//Heroku config
-	'DB_NAME' => 'REDACTED',
+	/*'DB_NAME' => 'REDACTED',
 	'DB_USER' => 'REDACTED',
 	'DB_PASS' => 'REDACTED',
 	'DB_HOST' => 'REDACTED',
@@ -18,9 +18,12 @@ $ENVIRONMENT_VARIABLES = [
 	, 'MAIL_USERNAME' => 'israelalagbe53@gmail.com'
 	, 'MAIL_PASSWORD' => 'REDACTED'
 	, 'MAIL_ENCRYPTION' => 'tls'
-	, 'MAIL_PRETEND' => true,
+	, 'MAIL_PRETEND' => true,*/
 
 ];
+if (file_exists('.env')) {
+	$ENVIRONMENT_VARIABLES = array_merge(parse_ini_file(".env"), $ENVIRONMENT_VARIABLES);
+}
 if (!function_exists('get_env')) {
 
 	function get_env($key, $defaultValue = null) {
