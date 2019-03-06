@@ -61,7 +61,7 @@ class Auth extends Api_Controller {
 
 		if ($count > 0) {
 
-			$users = Users::select('u_id', 'u_first_name', 'u_image', 'u_edu_institution')->where('u_email', $this->input['email'])->first();
+			$users = Users::select('u_id', 'u_first_name', 'u_image', 'u_image_100', 'u_image_200', 'u_edu_institution')->where('u_email', $this->input['email'])->first();
 
 			$userid = $users['u_id'];
 
@@ -107,28 +107,23 @@ class Auth extends Api_Controller {
 
 			$userlogs->save();
 
-			$dir = $this->app->get('profile_pic_upload_url');
-
-			$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-
-			$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
-
 			$output = array(
 
 				"status" => true,
 
-				"data" => array("user_details" => $users,
+				"data" => [
+					"user_details" => $users,
 					"institution_id" => $users['u_edu_institution'],
 					"institution_name" => $institution['ei_name'],
 					"access_token" => $token,
 
-					"user_pic_url" => $this->env['app_url_live'] . "" . $dir . "" . $users['u_image'],
+					"user_pic_url" => $users['u_image'],
 
-					"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $users['u_image'],
+					"user_pic_url_100" => $users['u_image_100'],
 
-					"user_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users['u_image'],
+					"user_pic_url_200" => $users['u_image_200'],
 
-				),
+				],
 
 				"message" => "login success",
 

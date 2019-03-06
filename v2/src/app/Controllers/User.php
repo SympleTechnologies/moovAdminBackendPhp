@@ -9,13 +9,14 @@ use src\app\Helpers\Hwallet;
 use src\app\Models\BankDetails;
 use src\app\Models\User as Users;
 use src\config\Api_Controller;
+use src\app\Helpers\FileUpload;
 
 class User extends Api_Controller
 {
-	public function __construct($app)
+	/* public function __construct($app)
 	{
 		parent::__construct();
-	}
+	} */
 
 	public function update_setting()
 	{ }
@@ -169,44 +170,12 @@ class User extends Api_Controller
 
 		return $this->response->withJson($result);
 	}
-	private function uploadProfileImage($fromFilePath){
-		$dir = $this->app->get('profile_pic_upload');
-		$crop_dir_200 = $this->app->get('profile_pic_upload_croped_200');
-		$crop_dir_100 = $this->app->get('profile_pic_upload_croped_100');
-		$uploadedImageUrl=\Cloudinary\Uploader::upload(
-			$fromFilePath,[
-					"folder" => $dir, 
-					"overwrite" => true,
-					"resource_type" => "image"
-				])['secure_url'];
-		//$uploadedImageUrl=$uploadResult['url'];
-		$uploadedImageCrop100Url=\Cloudinary\Uploader::upload($uploadedImageUrl,[
-			"folder" => $crop_dir_100, 
-			"overwrite" => true,
-			"resource_type" => "image",
-			"width"=>100,
-			"quality"=>"auto",
-			"crop"=>"scale"
-		])['secure_url'];
-		$uploadedImageCrop200Url=\Cloudinary\Uploader::upload($uploadedImageUrl,[
-			"folder" => $crop_dir_200, 
-			"overwrite" => true,
-			"resource_type" => "image",
-			"width"=>200,
-			"quality"=>"auto",
-			"crop"=>"scale"
-		])['secure_url'];
-		return [
-			'url'=>$uploadedImageUrl,
-			'url_crop_100'=>$uploadedImageCrop100Url,
-			'url_crop_200'=>$uploadedImageCrop200Url
-		];
-	}
+	
 	public function update_profile_picture($request, $response, $args)
 	{
 		$userid = $args['user_id'];
 		if (!empty($userid)) {
-			if(!Helper::get_user($userid)){
+			if (!Helper::get_user($userid)) {
 				$result = array(
 
 					"status" => false,
@@ -229,10 +198,8 @@ class User extends Api_Controller
 			//die();
 			$uploadedFiles = $this->request->getUploadedFiles();
 			if (isset($uploadedFiles['image']) && $uploadedFiles['image']->getError() === UPLOAD_ERR_OK) {
-
-				
-				
-				$uploadResult=$this->uploadProfileImage($_FILES["image"]["tmp_name"]);
+				$fileUpload=new FileUpload($this->app);
+				$uploadResult = $fileUpload->uploadProfileImage($_FILES["image"]["tmp_name"]);
 
 				// $this->response->write('uploaded ' . $filename . '<br/>');
 
@@ -245,7 +212,16 @@ class User extends Api_Controller
 				$img->resize(100, 100);
 
 				$img->save($crop_dir_100 . "" . $filename); */
-			} else {
+			}
+			else if(!isset($uploadedFiles['image'])){
+				$result = array(
+
+					"status" => false,
+					"message" => "Upload failed! No image found to upload!",
+				);
+				return $this->response->withJson($result);
+			}
+			else {
 				$result = array(
 
 					"status" => false,
@@ -375,11 +351,12 @@ class User extends Api_Controller
 			$result = array(
 
 
-						"status" => true,
+				"status" => true,
 
 				"data" => array("user_details" => $users[0]),
 
-			);} else {
+			);
+		} else {
 			$result = array(
 
 				"status" => false,
@@ -484,21 +461,22 @@ class User extends Api_Controller
 
 		$dd_array = array_map(function ($val) {
 			return is_null($val) ? "" : $val;
-	
-					}, $details);
+		}, $details);
 
 		$result = array(
 
 			"status" => true,
 
-			"data" => array("user_details" => $dd_array,
+			"data" => array(
+				"user_details" => $dd_array,
 
 				"user_pic_url" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
 
 				"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $users->u_image,
 
 				"us
-			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image),
+			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image
+			),
 
 			"message" => "Driver detais",
 
@@ -557,12 +535,14 @@ class User extends Api_Controller
 
 			"status" => true,
 
-			"data" => array("user_details" => $details, "user_pic_url" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
+			"data" => array(
+				"user_details" => $details, "user_pic_url" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
 
 				"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $users->u_image,
 
 				"us
-			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image),
+			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image
+			),
 
 			"message" => "User detais",
 

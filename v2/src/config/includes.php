@@ -1,5 +1,5 @@
 <?php
-/*
+ /*
 spl_autoload_register(function ($class) {
 
 $sources = array("src/app/Models/$class.php", "src/app/Helpers/$class.php ", "src/config/$class.php","src/app/Controllers/$class.php","src/app/Middleware/$class.php");
@@ -14,21 +14,21 @@ require $source;
 }
 });
  */
-/*
-spl_autoload_register( function ($className) {
-$className = ltrim($className, '\\');
-$fileName  = '';
-$namespace = '';
-if ($lastNsPos = strrpos($className, '\\')) {
-$namespace = substr($className, 0, $lastNsPos);
-$className = substr($className, $lastNsPos + 1);
-$fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-}
-$fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
-require $fileName;
-});
- */
+/* spl_autoload_register(function ($className) {
+    $className = ltrim($className, '\\');
+    $fileName  = '';
+    $namespace = '';
+    if ($lastNsPos = strrpos($className, '\\')) {
+        $namespace = substr($className, 0, $lastNsPos);
+        $className = substr($className, $lastNsPos + 1);
+        $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+    }
+    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+
+    require $fileName;
+}); */
+
 
 //Models
 
@@ -62,7 +62,7 @@ require 'src/app/Models/Transaction.php';
 require 'src/app/Helpers/HWallet.php';
 
 require 'src/app/Helpers/Helper.php';
-
+require 'src/app/Helpers/FileUpload.php';
 //Controllers
 
 require 'src/config/Api_Controller.php';
