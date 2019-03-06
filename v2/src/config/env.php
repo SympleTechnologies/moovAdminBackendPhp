@@ -1,5 +1,6 @@
 <?php
 $ENVIRONMENT_VARIABLES = [];
+print_r($_ENV);
 if (file_exists('.env')) {
 	$ENVIRONMENT_VARIABLES = array_merge(parse_ini_file(".env"), $_ENV);
 }
