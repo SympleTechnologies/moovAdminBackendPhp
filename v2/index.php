@@ -8,7 +8,6 @@ if(!get_env('DEBUG')){
 	error_reporting(0);
 }
 $settings = require 'src/config/settings.php';
-print_r($settings);
 $app = new \Slim\App($settings);
 require '../jfunctions.php';
 require '../push_alert.php';
