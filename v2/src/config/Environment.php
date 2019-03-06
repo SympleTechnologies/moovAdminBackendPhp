@@ -103,9 +103,10 @@ foreach ($ENVIRONMENT_VARIABLES as $key => $value) {
 	# code...
 	$env[$key]=$value;
 }
+
+$ENVIRONMENT_VARIABLES=$env;
 print_r($ENVIRONMENT_VARIABLES);
 die("The End!");
-$ENVIRONMENT_VARIABLES=$env;
 
 
 
