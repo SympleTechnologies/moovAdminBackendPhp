@@ -1,9 +1,7 @@
 <?php
-$ENVIRONMENT_VARIABLES = [
-
-];
+$ENVIRONMENT_VARIABLES = [];
 if (file_exists('.env')) {
-	$ENVIRONMENT_VARIABLES = array_merge(parse_ini_file(".env"), $ENVIRONMENT_VARIABLES);
+	$ENVIRONMENT_VARIABLES = array_merge(parse_ini_file(".env"), $ENVIRONMENT_VARIABLES,$_ENV);
 }
 if (!function_exists('get_env')) {
 
