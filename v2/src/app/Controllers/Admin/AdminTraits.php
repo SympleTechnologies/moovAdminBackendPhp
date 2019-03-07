@@ -1,11 +1,11 @@
 <?php
 namespace src\app\Controllers\Admin;
+use src\app\Models\BankDetails;
 use src\app\Models\DriverDetails;
 use src\app\Models\Rides;
 use src\app\Models\School;
 use src\app\Models\User;
 use src\app\Models\Wallet;
-
 trait AdminTraits {
 	public function createUser($req, $res) {
 
@@ -51,9 +51,12 @@ trait AdminTraits {
 		if ((int) $this->input['role'] >= $this->user->u_role && $this->user->u_role != self::SUPERADMIN) {
 			return $res->getBody()->write(json_encode(['status' => 400, 'message' => 'Error. You cannot create a user with this role']));
 		}
+		if (User::where('u_email', $this->input['email'])->count() > 0) {
+			return $res->getBody()->write(json_encode(['status' => 400, 'message' => 'Email already exists!']));
+		};
 
 		try {
-
+			$this->beginTransaction();
 			$user = new User();
 			$user->u_first_name = $this->input['firstname'];
 			$user->u_last_name = $this->input['lastname'];
@@ -84,11 +87,26 @@ trait AdminTraits {
 				$dd->dd_driver_id = $user->u_id;
 				$dd->car_colour = $this->input['car_colour'];
 				$dd->dd_birth_day = $this->input['dob'];
+
+				$dd->dd_expiery_date = $this->input['expiry_date'];
+				$dd->dd_license = $this->input['licence_number'];
+				$dd->dd_car_number = $this->input['plate_number'];
+				$dd->dd_car_model_id = $this->input['car_model'];
+				$dd->dd_car_capacity = $this->input['car_capacity'];
 				$dd->dd_admin_approved = 0;
 				$dd->dd_car_active = 1;
 				$dd->save();
-			}
 
+				$bd = new BankDetails;
+				$bd->bd_user_id = $user->u_id;
+				$bd->bd_bank_code = $this->input['bank_code'];
+				$bd->bd_bank_name = $this->input['bank_name'];
+				$bd->bd_account_number = $this->input['account_number'];
+				$bd->bd_account_name = $this->input['account_name'];
+				$bd->save();
+
+			}
+			$this->commitTransaction();
 			$res->getBody()->write(json_encode([
 				'status' => 200, 'message' => 'User Has been created',
 			]));
