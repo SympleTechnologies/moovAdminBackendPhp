@@ -11,6 +11,7 @@ use src\app\Models\UserLoginLog;
 use src\app\Models\Wallet;
 use src\config\Api_Controller;
 use src\config\Mail_Controller;
+use src\app\Helpers\Hasher;
 class Auth extends Api_Controller {
 	public function __construct($app) {
 		parent::__construct();
@@ -25,16 +26,13 @@ class Auth extends Api_Controller {
 			"forgot_password" => base_url($this->env['route']['user']['forgot']),
 			"register" => base_url($this->env['route']['user']['register']),
 		);
-		$userdata = array(
-			'u_email' => $this->input['email'],
-			'u_password' => $this->input['password'],
-		);
+		$password=$this->input['password'];
 		$pushToken = $this->input['push_token'];
 		$deviceId = $this->input['device_id'];
 		$deviceType = $this->input['device_type'];
 		$appVersion = $this->input['app_version'];
-		$count = Users::where($userdata)->count();
-		if ($count > 0) {
+		$user = Users::select('u_password')->where('u_email', $this->input['email'])->first();
+		if ( $user && Hasher::check($password,$user->u_password)) {
 			$users = Users::select('u_id', 'u_first_name', 'u_image', 'u_image_100', 'u_image_200', 'u_edu_institution')->where('u_email', $this->input['email'])->first();
 			$userid = $users['u_id'];
 			$balance = Hwallet::balance($users['u_id']);
@@ -217,7 +215,7 @@ class Auth extends Api_Controller {
 				$users->u_first_name = $this->input['f_name'];
 				$users->u_last_name = $this->input['l_name'];
 				$users->u_email = $this->input['email'];
-				$users->u_password = $userpassword;
+				$users->u_password = Hasher::hash($userpassword);
 				$users->u_edu_institution = $this->input['college'];
 				$users->u_phone = $this->input['phone'];
 				$users->u_gender = $gender;
