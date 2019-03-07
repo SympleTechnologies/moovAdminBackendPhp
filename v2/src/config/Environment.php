@@ -85,7 +85,7 @@ define("DB_USER", 'root');
 define("DB_PASSWORD", '');
 
 } else {
-die("We die here")
+//die("We die here")
 
 define("DB_DSN", 'mysql:host=localhost;dbname=themoova_pp_live;charset=utf8');
 
@@ -96,7 +96,8 @@ define("DB_PASSWORD", 'T36l@BLB%vp3');
 // 'themoovapp_test', //themoova_pp_live  //db
 // 'themoovapp_test', //themoova_moov //user
 
-}*/
+}
+*/
 
 /* $env['google_map_api'] = 'AIzaSyB6aH2GUchtBI9Pfu6BA8eRTNvvEFCx5r0'; //live from client */
 foreach ($ENVIRONMENT_VARIABLES as $key => $value) {
