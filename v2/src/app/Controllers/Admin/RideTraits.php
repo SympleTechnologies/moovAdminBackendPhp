@@ -218,7 +218,7 @@ trait RideTraits {
 		if (\is_null($ride)) {
 			return $res->getBody()->write(\json_encode([
 				'status' => 404,
-				'message' => 'Error Not found',
+				'message' => 'Ride Not found',
 			]));
 		}
 		$r = [
