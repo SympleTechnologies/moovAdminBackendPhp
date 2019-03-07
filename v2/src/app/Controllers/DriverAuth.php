@@ -60,7 +60,7 @@ class DriverAuth extends Api_Controller {
 		$count = Users::where($userdata)->count();
 
 		if ($count > 0) {
-			$users = Users::select('u_id', 'u_first_name', 'u_image', 'u_image_100', 'u_image_200', 'u_type')->where('u_email', $this->input['email'])->first();
+			$users = Users::select('u_id', 'u_first_name', 'u_image', 'u_image_100', 'u_image_200', 'u_type','car_colour')->where('u_email', $this->input['email'])->first();
 
 			$userid = $users['u_id'];
 
