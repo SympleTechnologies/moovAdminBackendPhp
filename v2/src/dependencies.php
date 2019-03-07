@@ -2,12 +2,11 @@
 
 $container = $app->getContainer();
 
-
-\Cloudinary::config(array( 
-	"cloud_name" => "moov-api", 
-	"api_key" => "322631579761977", 
-	"api_secret" => "xq8CSlfFFxGT6q_6vffpJUEtkIg" 
-  ));
+\Cloudinary::config(array(
+	"cloud_name" => "moov-api",
+	"api_key" => "322631579761977",
+	"api_secret" => "xq8CSlfFFxGT6q_6vffpJUEtkIg",
+));
 
 $container['db'] = function ($container) {
 	$capsule = new \Illuminate\Database\Capsule\Manager;
