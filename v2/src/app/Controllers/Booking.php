@@ -1108,9 +1108,8 @@ class Booking extends Api_Controller {
 	}
 
 	public function GetDrivingDistance($lat1, $lat2, $long1, $long2) {
-
-		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL&key=${get_env('google_map_api')}";
-		//&key=
+		$key=get_env('google_map_api');
+		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL&key={$key}";
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_URL, $url);
