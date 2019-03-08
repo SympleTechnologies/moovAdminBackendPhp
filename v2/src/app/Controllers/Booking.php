@@ -303,7 +303,6 @@ class Booking extends Api_Controller {
 
 			->get();
 
-		print_r($drivers_distance);
 
 	}
 
@@ -1110,8 +1109,8 @@ class Booking extends Api_Controller {
 
 	public function GetDrivingDistance($lat1, $lat2, $long1, $long2) {
 
-		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL";
-
+		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL&key=${get_env('google_map_api')}";
+		//&key=
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -1129,10 +1128,12 @@ class Booking extends Api_Controller {
 		curl_close($ch);
 
 		$response_a = json_decode($response, true);
+		if(empty($response_a['rows'])){
+			return null;
+		}
+		$dist = @$response_a['rows'][0]['elements'][0]['distance']['text'];
 
-		$dist = $response_a['rows'][0]['elements'][0]['distance']['text'];
-
-		$time = $response_a['rows'][0]['elements'][0]['duration']['text'];
+		$time = @$response_a['rows'][0]['elements'][0]['duration']['text'];
 
 		return array('distance' => $dist, 'time' => $time);
 
@@ -1243,9 +1244,9 @@ class Booking extends Api_Controller {
 
 			"wallet_balance" => $users->w_amount,
 			"total_rides" => $total_rides,
+			"car_colour"=>$users->car_colour,
 
-			"image" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
-
+			"image" => $users->u_image
 		);
 
 		$array = array_map(function ($val) {return is_null($val) ? "" : $val;}, $details);
