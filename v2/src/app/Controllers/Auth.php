@@ -225,7 +225,7 @@ class Auth extends Api_Controller {
 				$users->u_auth_provider = $this->input['auth_provider'];
 				$users->u_auth_uid = $this->input['auth_uid'];
 				$users->u_type = $this->input['user_type'];
-				$users->u_image = $filename;
+				$users->u_image_200=$users->u_image_100=$users->u_image="https://res.cloudinary.com/moov-api/image/upload/v1552051608/public/uploads/userpic/User.png";
 				$users->u_phone_country = $this->input['phone_country'];
 				$users->u_token = $token;
 				$users->u_push_token = $pushToken;
