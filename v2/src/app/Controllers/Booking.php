@@ -1128,9 +1128,9 @@ class Booking extends Api_Controller {
 		curl_close($ch);
 
 		$response_a = json_decode($response, true);
-		if(empty($response_a['rows'])){
+		/* if(empty($response_a['rows'])){
 			return null;
-		}
+		} */
 		$dist = @$response_a['rows'][0]['elements'][0]['distance']['text'];
 
 		$time = @$response_a['rows'][0]['elements'][0]['duration']['text'];
