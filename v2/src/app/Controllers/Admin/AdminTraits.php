@@ -64,7 +64,8 @@ trait AdminTraits {
 			$user->u_phone_country = $this->input['phone_country'];
 			$user->u_phone = $this->input['phone_number'];
 			$user->u_gender = $this->input['gender'];
-
+			//Temporarily using this defualt user image for now.
+			$user->u_image_200=$user->u_image_100=$user->u_image="https://res.cloudinary.com/moov-api/image/upload/v1552051608/public/uploads/userpic/User.png";
 			$user->u_role = (int) $this->input['role'];
 			$user->u_password = $this->input['password'];
 			if ($this->input['role'] === self::DRIVER) {
