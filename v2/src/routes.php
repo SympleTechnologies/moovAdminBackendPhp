@@ -144,6 +144,7 @@ $env['route'] = array(
 		"update_driver_details" => '/update/driver_details',
 
 		"update_profile_pic" => '/update/profile_pic/{user_id}',
+		"update_profile_pic_ios" => '/update/profile_pic/ios/{user_id}',
 
 		"update_email" => '/update/email',
 		"update_bank_details" => '/update/bank',
@@ -271,9 +272,8 @@ $app->post($r_global['support_email'], "Email:support_email"); //->add($amw);
 $app->post($r_global['update_profile'], "User:update_profile");
 
 $app->post($r_global['update_driver_details'], "User:update_driver_details");
-
+$app->post($r_global['update_profile_pic_ios'], "User:update_profile_picture_ios");
 $app->post($r_global['update_profile_pic'], "User:update_profile_picture");
-
 $app->post($r_global['update_email'], "User:update_email");
 
 $app->post($r_global['update_password'], "User:update_password");

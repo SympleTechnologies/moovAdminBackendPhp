@@ -170,7 +170,68 @@ class User extends Api_Controller
 
 		return $this->response->withJson($result);
 	}
-	
+	public function update_profile_picture_ios($request, $response, $args)
+	{
+		$userid = $args['user_id'];
+		if (!empty($userid)) {
+			if (!Helper::get_user($userid)) {
+				$result = array(
+
+					"status" => false,
+					"message" => "Please provide a valid user ID, user with that ID does not exist!",
+				);
+				return $this->response->withJson($result)->withStatus(400);
+			};
+		}
+		if (!@$this->input['image']) {
+			$result = array(
+
+				"status" => false,
+				"message" => "Please provide an image url",
+			);
+			return $this->response->withJson($result)->withStatus(400);
+		}
+		$imageUrl = @$this->input['image'];
+		$this->db->table('users')
+
+			->where('u_id', $userid)
+
+			->update([
+				"u_image" => $imageUrl,
+				"u_image_100" => $imageUrl,
+				"u_image_200" => $imageUrl,
+			]);
+		
+		$users = Users::select('u_id', 'u_first_name', 'u_image')->where('u_id', $userid)->first();
+
+		$balance = Hwallet::balance($userid);
+
+		if (!empty($balance)) {
+			$users['wallet_balance'] = $balance;
+		} else {
+			$users['wallet_balance'] = 0;
+		}
+		$result = array(
+
+			"status" => true,
+			// "userdata"=>$user_details,
+			"message" => "Updated Successfully",
+			"data" => array(
+				"user_details" => $users,
+
+				"user_pic_url" => $imageUrl,
+
+				"user_pic_url_100" => $imageUrl,
+
+				"user_pic_url_200" => $imageUrl
+
+			),
+
+			// "links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+		);
+		return $this->response->withJson($result);
+	}
 	public function update_profile_picture($request, $response, $args)
 	{
 		$userid = $args['user_id'];
@@ -198,7 +259,7 @@ class User extends Api_Controller
 			//die();
 			$uploadedFiles = $this->request->getUploadedFiles();
 			if (isset($uploadedFiles['image']) && $uploadedFiles['image']->getError() === UPLOAD_ERR_OK) {
-				$fileUpload=new FileUpload($this->app);
+				$fileUpload = new FileUpload($this->app);
 				$uploadResult = $fileUpload->uploadProfileImage($_FILES["image"]["tmp_name"]);
 
 				// $this->response->write('uploaded ' . $filename . '<br/>');
@@ -212,16 +273,14 @@ class User extends Api_Controller
 				$img->resize(100, 100);
 
 				$img->save($crop_dir_100 . "" . $filename); */
-			}
-			else if(!isset($uploadedFiles['image'])){
+			} else if (!isset($uploadedFiles['image'])) {
 				$result = array(
 
 					"status" => false,
 					"message" => "Upload failed! No image found to upload!",
 				);
 				return $this->response->withJson($result);
-			}
-			else {
+			} else {
 				$result = array(
 
 					"status" => false,
