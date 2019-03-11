@@ -6,6 +6,8 @@ use src\app\Helpers\Helper;
 use src\app\Models\DriverDetails;
 use src\app\Models\User as Users;
 use src\config\Api_Controller;
+use Rakit\Validation\Validator;
+use src\app\Helpers\RecordExistsValidatorRule;
 
 class Booking extends Api_Controller {
 
@@ -308,9 +310,48 @@ class Booking extends Api_Controller {
 
 	public function book_ride() {
 
-		$parsedBody = $this->request->getParsedBody();
 
-		$this->logger->Info('Book Request', $parsedBody);
+
+		$this->logger->Info('Book Request', $this->input);
+		$validator = new Validator([
+			'required' => ':attribute field is required',
+			'email' => ':email field is required',
+			'record_exists'=>":attribute doesn't match any user record"
+		]);
+		$validator->addValidator('record_exists', new RecordExistsValidatorRule($this->pdo));
+		$validation = $validator->make($this->input, [
+
+			"userid"=>"required|numeric|record_exists:users,u_id",
+			"from"=>"required",
+			"to"=>"required",
+			"pooling"=>"required|in:yes,no",
+			"seats"=>"required|numeric",
+			"amount"=>"required|numeric",
+			"current_lat"=>"required|numeric",
+			"current_long"=>"required|numeric",
+			"from_lat"=>"required|numeric",
+			"from_long"=>"required|numeric",
+			"to_lat"=>"required|numeric",
+			"to_long"=>"required|numeric"
+		]);
+		$validation->validate();
+		if ($validation->fails()) {
+			$booking_response = array(
+
+				"status" => false,
+
+				"message" => "Invalid Request Body",
+				'errors'=>$validation->errors()->toArray(),
+
+				"links" => array(
+
+					"self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath(),
+
+				),
+
+			);
+			return $this->response->withJson($booking_response);
+		}
 
 		$time = time_now();
 
