@@ -201,7 +201,7 @@ class User extends Api_Controller
 				"u_image_100" => $imageUrl,
 				"u_image_200" => $imageUrl,
 			]);
-		
+
 		$users = Users::select('u_id', 'u_first_name', 'u_image')->where('u_id', $userid)->first();
 
 		$balance = Hwallet::balance($userid);
@@ -453,11 +453,7 @@ class User extends Api_Controller
 
 	public function driver_details($request, $response, $args)
 	{
-		$dir = $this->app->get('profile_pic_upload_url');
 
-		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-
-		$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
 
 		$userid = $args['id'];
 
@@ -515,7 +511,7 @@ class User extends Api_Controller
 
 			"wallet_balance" => $users->w_amount,
 
-			"image" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
+			"image" => $users->u_image,
 
 		);
 
@@ -530,12 +526,11 @@ class User extends Api_Controller
 			"data" => array(
 				"user_details" => $dd_array,
 
-				"user_pic_url" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
+				"user_pic_url" => $users->u_image,
 
-				"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $users->u_image,
+				"user_pic_url_100" => $users->u_image_100,
 
-				"us
-			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image
+				"user_pic_url_200" => $users->u_image_200
 			),
 
 			"message" => "Driver detais",
@@ -549,11 +544,6 @@ class User extends Api_Controller
 
 	public function user_details($request, $response, $args)
 	{
-		$dir = $this->app->get('profile_pic_upload_url');
-
-		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-
-		$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
 
 		$userid = $args['id'];
 
@@ -593,15 +583,14 @@ class User extends Api_Controller
 
 		$result = array(
 
-			"status" => true,
+			"status" => true, 
 
 			"data" => array(
-				"user_details" => $details, "user_pic_url" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
+				"user_details" => $details, "user_pic_url" => $users->u_image,
 
-				"user_pic_url_100" => $this->env['app_url_live'] . "" . $dir100 . "" . $users->u_image,
+				"user_pic_url_100" => $users->u_image_100,
 
-				"us
-			er_pic_url_200" => $this->env['app_url_live'] . "" . $dir200 . "" . $users->u_image
+				"user_pic_url_200" => $users->u_image_200
 			),
 
 			"message" => "User detais",
@@ -1022,11 +1011,6 @@ class User extends Api_Controller
 
 	public function get_driver_details($userid)
 	{
-		$dir = $this->app->get('profile_pic_upload_url');
-
-		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-
-		$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
 
 		// $userid = $args['id'];
 
@@ -1084,7 +1068,7 @@ class User extends Api_Controller
 
 			"wallet_balance" => $users->w_amount,
 
-			"image" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
+			"image" => $users->u_image,
 
 		);
 
@@ -1097,11 +1081,6 @@ class User extends Api_Controller
 
 	public function get_user_details($userid)
 	{
-		$dir = $this->app->get('profile_pic_upload_url');
-
-		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-
-		$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
 
 		$users = $this->db->table('users')
 
