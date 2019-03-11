@@ -352,7 +352,8 @@ class User extends Api_Controller
 
 	public function getUser($request, $response, $args)
 	{
-		$users = Users::select('u_id', 'u_first_name', 'u_last_name', 'u_image')->where('u_id', $args['id'])->get();
+		//'u_id', 'u_first_name', 'u_last_name', 'u_image'
+		$users = Users::select('*')->where('u_id', $args['id'])->get();
 
 		$result = array(
 
