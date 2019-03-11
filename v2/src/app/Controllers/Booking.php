@@ -1163,8 +1163,6 @@ class Booking extends Api_Controller {
 		$total_rides = $this->db->table('cab_trip')
 			->where('ct_driver_id', $userid)->count();
 
-		$dir = $this->app->get('profile_pic_upload_url');
-
 		$details = array(
 
 			"driver_id" => $users->u_id,

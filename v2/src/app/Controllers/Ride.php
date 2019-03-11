@@ -225,10 +225,7 @@ $dd->save();*/
 					'cr_trip_id' => $trip->ct_id,
 
 				);
-				$dir = $this->app->get('profile_pic_upload_url');
-				$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-				$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
-				$image_url = $this->env['app_url_live'] . "" . $dir . "" . $users['u_image'];
+				$image_url = $users['u_image'];
 
 				$rides = Rides::select('cr_start_name as start', 'cr_stop_name as stop', 'cr_amount as amount', 'cr_payment_status as payment_status', 'cr_booked_on as booked_on', 'cr_ride_end_time as booked_closed_on', 'cr_no_passengers as seats', 'u_first_name')
 					->selectRaw("CONCAT('" . $image_url . "',`u_image`)  AS image")
@@ -335,10 +332,7 @@ $dd->save();*/
 // print_r($tripdata);
 
 		$trips_data = array();
-		$dir = $this->app->get('profile_pic_upload_url');
-		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-		$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
-		$image_url = $this->env['app_url_live'] . "" . $dir . "" . $users['u_image'];
+		$image_url =$users['u_image'];
 
 		$rides = Rides::select('cr_id as ride_id', 'cr_start_name as start', 'cr_stop_name as stop', 'cr_amount as amount', 'cr_payment_status as payment_status', 'cr_booked_on as booked_on', "cr_cab_ride_status as status", 'u_first_name')
 			->selectRaw("CONCAT('" . $image_url . "',`u_image`)  AS image")
@@ -1168,7 +1162,6 @@ $dd->save();*/
 
 	public function driver_details($userid) {
 
-		$dir = $this->app->get('profile_pic_upload_url');
 
 		$users = $this->db->table('users')
 
@@ -1226,7 +1219,7 @@ $dd->save();*/
 
 			"wallet_balance" => $users->w_amount,
 
-			"image" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
+			"image" => $users->u_image,
 
 		);
 
@@ -1267,6 +1260,7 @@ $dd->save();*/
 			$statement->execute();
 
 			$trips_details_data = $statement->fetch(); //  All($this->pdo::FETCH_ASSOC);
+			$driverDetails = $this->driver_details($trips_details_data['ct_driver_id']);
 
 			$time = $ride['cr_booked_on'];
 
@@ -1314,7 +1308,7 @@ $dd->save();*/
 
 				'ride_to' => $ride['cr_stop_name'],
 
-				'driver_data' => $driver_details,
+				'driver_data' => $driverDetails,
 
 			);
 
@@ -1593,10 +1587,7 @@ $dd->save();*/
 		);
 
 		$trips_data = array();
-		$dir = $this->app->get('profile_pic_upload_url');
-		$dir100 = $this->app->get('profile_pic_upload_croped_100_url');
-		$dir200 = $this->app->get('profile_pic_upload_croped_200_url');
-		$image_url = $this->env['app_url_live'] . "" . $dir . "" . $users['u_image'];
+		$image_url =$users['u_image'];
 
 		$rides = Rides::select('cr_id as ride_id', 'cr_user_id as u_id', 'cr_start_name as start', 'cr_stop_name as stop', 'cr_amount as amount', 'cr_payment_status as payment_status', 'cr_booked_on as booked_on', "cr_cab_ride_status as status", 'u_first_name', 'cr_start_lat',
 			'cr_start_long', 'cr_polyline')
@@ -1738,8 +1729,8 @@ $dd->save();*/
 
 	public function GetDrivingDistance($lat1, $lat2, $long1, $long2) {
 
-		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL";
-
+		$key=get_env('google_map_api');
+		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL&key={$key}";
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -1757,10 +1748,12 @@ $dd->save();*/
 		curl_close($ch);
 
 		$response_a = json_decode($response, true);
+		/* if(empty($response_a['rows'])){
+			return null;
+		} */
+		$dist = @$response_a['rows'][0]['elements'][0]['distance']['text'];
 
-		$dist = $response_a['rows'][0]['elements'][0]['distance']['text'];
-
-		$time = $response_a['rows'][0]['elements'][0]['duration']['text'];
+		$time = @$response_a['rows'][0]['elements'][0]['duration']['text'];
 
 		return array('distance' => $dist, 'time' => $time);
 

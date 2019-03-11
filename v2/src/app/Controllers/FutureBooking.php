@@ -669,7 +669,6 @@ class FutureBooking extends Api_Controller {
 		$total_rides = $this->db->table('cab_trip')
 			->where('ct_driver_id', $userid)->count();
 
-		$dir = $this->app->get('profile_pic_upload_url');
 
 		$details = array(
 
@@ -750,7 +749,7 @@ class FutureBooking extends Api_Controller {
 			"wallet_balance" => $users->w_amount,
 			"total_rides" => $total_rides,
 
-			"image" => $this->env['app_url_live'] . "" . $dir . "" . $users->u_image,
+			"image" => $users->u_image,
 
 		);
 
