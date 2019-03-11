@@ -4,3 +4,4 @@ vendor/
 error_log
 v2/error_log.old
 v2/.env
+test_push.php
