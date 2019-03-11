@@ -115,7 +115,7 @@ function AndroidPush($deviceToken = '', $message = array()) {
 
 }
 
-function iOSPush_rider($deviceToken, $message) {
+function iOSPush_rider($token, $message) {
 	$url = "https://fcm.googleapis.com/fcm/send";
 
 	$serverApiKey = "AIzaSyD2g3p8L7YBDFtJxCzehtDia4i_e_Tt47U"; //"Your Api key"
@@ -130,8 +130,8 @@ function iOSPush_rider($deviceToken, $message) {
 	//print_r($data);
 
 	$notification = [
-		'title' => $title,
-		'text' => $body,
+		'title' => $message['title'],
+		'text' => $message['body'],
 		'sound' => 'default',
 		'badge' => '1',
 	];
@@ -148,7 +148,7 @@ function iOSPush_rider($deviceToken, $message) {
 	$json = json_encode($arrayToSend);
 	$headers = array();
 	$headers[] = 'Content-Type: application/json';
-	$headers[] = 'Authorization: key=' . $serverKey;
+	$headers[] = 'Authorization: key=' . $serverApiKey;
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 
@@ -164,17 +164,6 @@ function iOSPush_rider($deviceToken, $message) {
 	die('FCM Send Error: ' . curl_error($ch));
 }*/
 	curl_close($ch);
-
-//  if (!$result){
-
-//     echo 'Message not delivered'.PHP_EOL;
-	//     }
-
-//     else{
-
-//          echo 'Message successfully delivered' . PHP_EOL;
-	//          print_r($result);
-	//     }
 
 }
 
