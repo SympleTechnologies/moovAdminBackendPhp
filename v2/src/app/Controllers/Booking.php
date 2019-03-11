@@ -203,7 +203,7 @@ class Booking extends Api_Controller {
 
 	}
 
-	public static function getClosestCars($lat, $lng, $city, $distance = 20, $limit = 20) {
+	public static function getClosestCars($lat, $lng, $city, $distance = 20, $limit = 20,$schoolID) {
 
 		$time = time_now();
 
@@ -212,27 +212,33 @@ class Booking extends Api_Controller {
 		$ctime = date('H:i:s', strtotime($time));
 
 		$coordinates = ['latitude' => $lat, 'longitude' => $lng];
-
+	
+		
 		$where = array(
 
 			"dd_status_date" => $date,
+			"users.u_edu_institution"=>$schoolID
 
 		);
 
-		$cares = self::scopeIsWithinMaxDistance(DriverDetails::raw('select *'), $coordinates, $distance)
+		$cares = self::scopeIsWithinMaxDistance(DriverDetails::query(), $coordinates, $distance)
 
 			->where($where)
 
 			->whereIn('dd_curent_status', ['online', 'ontrip', 'onride'])
 
-			->limit($limit)->get();
-
-		return $cares ? $cares->toArray() : null;
-
+			->limit($limit)->get('id');
+		if($cares){
+			return $cares->toArray();
+		}
+		return null;
 	}
 
 	public static function scopeIsWithinMaxDistance($query, $coordinates, $radius = 50) {
-
+		$query->join('users', function ($join) {
+			
+			$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
+		});
 		$haversine = "(3961 * acos(cos(radians(" . $coordinates['latitude'] . "))
 
 
@@ -255,7 +261,8 @@ class Booking extends Api_Controller {
 
                 * sin(radians(`dd_current_lat`))))";
 
-		return $query->select('*')
+		return $query
+			->select('driver_details.*','users.u_edu_institution')
 
 			->selectRaw("{$haversine} AS distance")
 
@@ -435,8 +442,9 @@ class Booking extends Api_Controller {
 		//get drivers near user
 
 		$drive_details = $this->GetDrivingDistance($from_lat, $current_lat, $from_long, $current_long);
+		$user=Users::find($uid);
 
-		if ($drivers_distance = $this->getClosestCars($from_lat, $from_long, $groupby = "", $distance = $this->env['booking_distance'], $limit = 15)) {
+		if ($drivers_distance = $this->getClosestCars($from_lat, $from_long, $groupby = "", $distance = $this->env['booking_distance'], $limit = 15,$user->u_edu_institution)) {
 			//find drivers near 15 km
 
 			// print_r($drivers_distance);
