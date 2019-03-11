@@ -43,8 +43,11 @@ function iOSPush($token, $message) {
 		"POST");
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 //Send the request
-	$response = curl_exec($ch);
+	//ob_start();
+	curl_exec($ch);
+	//ob_get_clean();
 //Close request
 	/*if ($response === FALSE) {
 	die('FCM Send Error: ' . curl_error($ch));
@@ -157,6 +160,7 @@ function iOSPush_rider($token, $message) {
 		"POST");
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 //Send the request
 	$response = curl_exec($ch);
 //Close request
