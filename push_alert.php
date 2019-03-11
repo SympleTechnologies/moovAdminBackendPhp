@@ -1,6 +1,6 @@
 <?php
 
-function iOSPush($deviceToken, $message) {
+function iOSPush($token, $message) {
 
 	$url = "https://fcm.googleapis.com/fcm/send";
 
@@ -16,8 +16,8 @@ function iOSPush($deviceToken, $message) {
 	//print_r($data);
 
 	$notification = [
-		'title' => $title,
-		'text' => $body,
+		'title' => $message['title'],
+		'text' => $message['body'],
 		'sound' => 'default',
 		'badge' => '1',
 	];
@@ -34,7 +34,7 @@ function iOSPush($deviceToken, $message) {
 	$json = json_encode($arrayToSend);
 	$headers = array();
 	$headers[] = 'Content-Type: application/json';
-	$headers[] = 'Authorization: key=' . $serverKey;
+	$headers[] = 'Authorization: key=' . $serverApiKey;
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 
