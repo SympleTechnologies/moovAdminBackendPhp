@@ -63,6 +63,7 @@ require 'src/app/Helpers/HWallet.php';
 
 require 'src/app/Helpers/Helper.php';
 require 'src/app/Helpers/FileUpload.php';
+require 'src/app/Helpers/RecordExistsValidatorRule.php';
 //Controllers
 
 require 'src/config/Api_Controller.php';
