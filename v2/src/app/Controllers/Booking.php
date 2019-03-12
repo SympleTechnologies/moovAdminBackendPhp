@@ -316,8 +316,7 @@ class Booking extends Api_Controller {
 	}
 
 	public function book_ride() {
-
-
+		set_time_limit(0);
 
 		$this->logger->Info('Book Request', $this->input);
 		$validator = new Validator([
@@ -1291,6 +1290,7 @@ class Booking extends Api_Controller {
 			"wallet_balance" => $users->w_amount,
 			"total_rides" => $total_rides,
 			"car_colour"=>$users->car_colour,
+			"car_image"=>$users->car_image,
 
 			"image" => $users->u_image
 		);
