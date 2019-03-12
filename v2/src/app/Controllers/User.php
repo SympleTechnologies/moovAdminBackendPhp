@@ -10,6 +10,8 @@ use src\app\Models\BankDetails;
 use src\app\Models\User as Users;
 use src\config\Api_Controller;
 use src\app\Helpers\FileUpload;
+use src\app\Helpers\RecordExistsValidatorRule;
+use Rakit\Validation\Validator;
 
 class User extends Api_Controller
 {
@@ -812,6 +814,34 @@ class User extends Api_Controller
 	{
 		$OTP = randomPassword($this->env['otp_length']);
 
+		$validator = new Validator([
+			'required' => ':attribute field is required',
+			'email' => ':email field is required',
+			'record_exists'=>":attribute doesn't match any user record"
+		]);
+		$validator->addValidator('record_exists', new RecordExistsValidatorRule($this->pdo));
+		$validation = $validator->make($this->input, [
+			'userid'=>"required|numeric|record_exists:users,u_id",
+			'phone'=>"required|numeric",
+			'phone_country'=>'required|regex:/^\+\d+?$/'
+		]);
+		$validation->validate();
+		if ($validation->fails()) {
+			$result = array(
+
+				"status" => false,
+
+				"message" => "Invalid user input!",
+
+				'errors'=>$validation->errors()->toArray(),
+
+				"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+			);
+			return $this->response->withJson($result);
+		}
+
+		
 		$userid = $this->input['userid'];
 
 		$phone = $this->input['phone'];
@@ -844,7 +874,21 @@ class User extends Api_Controller
 
 					]);
 
-				$this->send_sms('+919020785587', "Your OTP for MOOVAPP " . $OTP);
+					try {
+						$this->send_sms($phone_country.$phone, "Your Moov verification code is: " . $OTP);
+					} catch (\Throwable $th) {
+						//throw $th;
+						$result = array(
+		
+							"status" => false,
+		
+							"message" => $th->getMessage(),
+		
+							"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+		
+						);
+						return $this->response->withJson($result);
+					}
 
 				$result = array(
 
@@ -878,14 +922,28 @@ class User extends Api_Controller
 				//'t_response' => $tranx->data
 
 			);
+			try {
+				$this->send_sms($phone_country.$phone, "Your Moov verification code is: " . $OTP);
+			} catch (\Throwable $th) {
+				//throw $th;
+				$result = array(
 
-			$this->send_sms('+919020785587', "Your OTP for MOOVAPP " . $OTP);
+					"status" => false,
+
+					"message" => $th->getMessage(),
+
+					"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+				);
+				return $this->response->withJson($result);
+			}
+			
 
 			$result = array(
 
 				"status" => true,
 
-				"message" => "otp send successfully",
+				"message" => "Otp send successfully",
 
 				// "error" => array(
 
@@ -911,7 +969,7 @@ class User extends Api_Controller
 
 			array(
 
-				'from' => '+17742955804', // From a valid Twilio number
+				'from' => get_env('twilio_number'), // From a valid Twilio number
 
 				'body' => $message,
 
