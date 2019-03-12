@@ -982,7 +982,7 @@ class User extends Api_Controller
 
 	public function update_phone_with_otp()
 	{
-
+		//Otp is now going to be disabled
 		$validator = new Validator([
 			'required' => ':attribute field is required',
 			'email' => ':email field is required',
@@ -993,7 +993,7 @@ class User extends Api_Controller
 			'userid' => "required|numeric|record_exists:users,u_id",
 			'phone' => "required|numeric",
 			'phone_country' => 'required|regex:/^\+\d+?$/',
-			'otp' => 'required'
+			//'otp' => 'required'
 		]);
 		$validation->validate();
 		if ($validation->fails()) {
@@ -1021,7 +1021,7 @@ class User extends Api_Controller
 
 		$userdata = array(
 
-			'u_last_otp' => $otp,
+			//'u_last_otp' => $otp,
 
 			'u_id' => $userid,
 
@@ -1068,7 +1068,7 @@ class User extends Api_Controller
 
 					"status" => false,
 
-					"message" => "Failed to update phone number",
+					"message" => "Failed to update phone number, please ensure your phone number is different from existing one!",
 
 					"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
 
@@ -1079,7 +1079,7 @@ class User extends Api_Controller
 
 				"status" => false,
 
-				"message" => "OTP confirmation failed",
+				"message" => "Failed to find user",
 
 				"error" => array(
 
