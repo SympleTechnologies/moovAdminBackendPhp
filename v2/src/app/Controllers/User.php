@@ -585,7 +585,7 @@ class User extends Api_Controller
 
 		$result = array(
 
-			"status" => true, 
+			"status" => true,
 
 			"data" => array(
 				"user_details" => $details, "user_pic_url" => $users->u_image,
@@ -817,13 +817,13 @@ class User extends Api_Controller
 		$validator = new Validator([
 			'required' => ':attribute field is required',
 			'email' => ':email field is required',
-			'record_exists'=>":attribute doesn't match any user record"
+			'record_exists' => ":attribute doesn't match any user record"
 		]);
 		$validator->addValidator('record_exists', new RecordExistsValidatorRule($this->pdo));
 		$validation = $validator->make($this->input, [
-			'userid'=>"required|numeric|record_exists:users,u_id",
-			'phone'=>"required|numeric",
-			'phone_country'=>'required|regex:/^\+\d+?$/'
+			'userid' => "required|numeric|record_exists:users,u_id",
+			'phone' => "required|numeric",
+			'phone_country' => 'required|regex:/^\+\d+?$/'
 		]);
 		$validation->validate();
 		if ($validation->fails()) {
@@ -833,7 +833,7 @@ class User extends Api_Controller
 
 				"message" => "Invalid user input!",
 
-				'errors'=>$validation->errors()->toArray(),
+				'errors' => $validation->errors()->toArray(),
 
 				"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
 
@@ -841,7 +841,7 @@ class User extends Api_Controller
 			return $this->response->withJson($result);
 		}
 
-		
+
 		$userid = $this->input['userid'];
 
 		$phone = $this->input['phone'];
@@ -874,21 +874,21 @@ class User extends Api_Controller
 
 					]);
 
-					try {
-						$this->send_sms($phone_country.$phone, "Your Moov verification code is: " . $OTP);
-					} catch (\Throwable $th) {
-						//throw $th;
-						$result = array(
-		
-							"status" => false,
-		
-							"message" => $th->getMessage(),
-		
-							"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
-		
-						);
-						return $this->response->withJson($result);
-					}
+				try {
+					$this->send_sms($phone_country . $phone, "Your Moov verification code is: " . $OTP);
+				} catch (\Throwable $th) {
+					//throw $th;
+					$result = array(
+
+						"status" => false,
+
+						"message" => $th->getMessage(),
+
+						"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+					);
+					return $this->response->withJson($result);
+				}
 
 				$result = array(
 
@@ -923,7 +923,7 @@ class User extends Api_Controller
 
 			);
 			try {
-				$this->send_sms($phone_country.$phone, "Your Moov verification code is: " . $OTP);
+				$this->send_sms($phone_country . $phone, "Your Moov verification code is: " . $OTP);
 			} catch (\Throwable $th) {
 				//throw $th;
 				$result = array(
@@ -937,7 +937,7 @@ class User extends Api_Controller
 				);
 				return $this->response->withJson($result);
 			}
-			
+
 
 			$result = array(
 
@@ -982,6 +982,35 @@ class User extends Api_Controller
 
 	public function update_phone_with_otp()
 	{
+
+		$validator = new Validator([
+			'required' => ':attribute field is required',
+			'email' => ':email field is required',
+			'record_exists' => ":attribute doesn't match any user record"
+		]);
+		$validator->addValidator('record_exists', new RecordExistsValidatorRule($this->pdo));
+		$validation = $validator->make($this->input, [
+			'userid' => "required|numeric|record_exists:users,u_id",
+			'phone' => "required|numeric",
+			'phone_country' => 'required|regex:/^\+\d+?$/',
+			'otp' => 'required'
+		]);
+		$validation->validate();
+		if ($validation->fails()) {
+			$result = array(
+
+				"status" => false,
+
+				"message" => "User input validation error!",
+
+				'errors' => $validation->errors()->toArray(),
+
+				"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
+
+			);
+			return $this->response->withJson($result);
+		}
+
 		$userid = $this->input['userid'];
 
 		$phone = $this->input['phone'];
@@ -999,13 +1028,7 @@ class User extends Api_Controller
 		);
 
 		// get_driver_details
-		$u_details = $this->get_user_details($userid);
-		$u_type = $u_details['u_type'];
-		if ($u_type == "3") {
-			$user_details = $u_details;
-		} else {
-			$user_details = $this->get_driver_details($userid);
-		}
+
 
 		$count = Users::where($userdata)->count();
 
@@ -1021,6 +1044,13 @@ class User extends Api_Controller
 					"u_phone_country" => $phone_country,
 
 				]);
+			$u_details = $this->get_user_details($userid);
+			$u_type = $u_details['u_type'];
+			if ($u_type == "3") {
+				$user_details = $u_details;
+			} else {
+				$user_details = $this->get_driver_details($userid);
+			}
 
 			if ($affected) {
 				$result = array(
@@ -1038,7 +1068,7 @@ class User extends Api_Controller
 
 					"status" => false,
 
-					"message" => "Phone Updated failed",
+					"message" => "Failed to update phone number",
 
 					"links" => array("self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath()),
 
@@ -1049,7 +1079,7 @@ class User extends Api_Controller
 
 				"status" => false,
 
-				"message" => "Otp failed",
+				"message" => "OTP confirmation failed",
 
 				"error" => array(
 
