@@ -4,9 +4,9 @@ $container = $app->getContainer();
 
 
 \Cloudinary::config(array( 
-	"cloud_name" => "moov-api", 
-	"api_key" => "322631579761977", 
-	"api_secret" => "xq8CSlfFFxGT6q_6vffpJUEtkIg" 
+	"cloud_name" => get_env('cloudinary_cloud_name'), 
+	"api_key" => get_env('cloudinary_api_key'), 
+	"api_secret" => get_env('cloudinary_api_secret') 
   ));
 
 $container['db'] = function ($container) {
