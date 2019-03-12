@@ -1245,7 +1245,7 @@ $dd->save();*/
 
 			->where($details)
 
-			->whereNotIn('cr_cab_ride_status', ['completed', 'cancelled'])
+			->whereIn('cr_cab_ride_status', ['completed', 'cancelled'])
 
 			->orderBy('cab_rides.cr_id', 'desc')
 
@@ -1372,7 +1372,6 @@ $dd->save();*/
 		//->first();
 
 		if (!empty($rides)) {
-
 			foreach ($rides as $ride) {
 
 				$trip_id = $ride['cr_trip_id'];
