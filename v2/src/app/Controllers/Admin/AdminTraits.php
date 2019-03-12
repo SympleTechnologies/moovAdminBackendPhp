@@ -65,7 +65,7 @@ trait AdminTraits {
 			$user->u_phone = $this->input['phone_number'];
 			$user->u_gender = $this->input['gender'];
 			//Temporarily using this defualt user image for now.
-			$user->u_image_200=$user->u_image_100=$user->u_image="https://res.cloudinary.com/moov-api/image/upload/v1552051608/public/uploads/userpic/User.png";
+			$user->u_image_200 = $user->u_image_100 = $user->u_image = "https://res.cloudinary.com/moov-api/image/upload/v1552051608/public/uploads/userpic/User.png";
 			$user->u_role = (int) $this->input['role'];
 			$user->u_password = $this->input['password'];
 			if ($this->input['role'] === self::DRIVER) {
@@ -96,6 +96,7 @@ trait AdminTraits {
 				$dd->dd_car_capacity = $this->input['car_capacity'];
 				$dd->dd_admin_approved = 0;
 				$dd->dd_car_active = 1;
+				$dd->car_image = "https://res.cloudinary.com/moov-api/image/upload/v1552400783/public/EWB_7-8ths_Front_Whole_Car_Cut_Out_promoted_item_638_x_223.jpg";
 				$dd->save();
 
 				$bd = new BankDetails;
