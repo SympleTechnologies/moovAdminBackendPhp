@@ -8,7 +8,7 @@ namespace src\app\Controllers;
 
 use src\config\Api_Controller;
 
-
+use src\app\Models\CarModel;
 
 class Tests extends Api_Controller
 
@@ -19,7 +19,17 @@ class Tests extends Api_Controller
     public function test()
 
     {
-
+        // \set_time_limit(0);
+        // $jsonFile=file_get_contents('http://localhost/moov/scripts/image_data.json');
+        // $json=json_decode($jsonFile,true);
+        // foreach ($json as $value) {
+        //     CarModel::create([
+        //         'cm_model_name'=>$value['model'],
+        //         'cm_model_image'=>"https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars/".$value['image']
+        //     ]);
+        // }
+        // echo "Done!";
+        die();
 
 
         /*
