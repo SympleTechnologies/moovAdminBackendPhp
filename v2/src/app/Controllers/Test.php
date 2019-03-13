@@ -11,7 +11,7 @@ class Tests extends Api_Controller
 {
 
     public function test(){
-
+        echo "Testing";
         
     }
 }

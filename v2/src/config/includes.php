@@ -47,7 +47,7 @@ require 'src/app/Models/Trips.php';
 require 'src/app/Models/Bank_details.php';
 
 require 'src/app/Models/UserType.php';
-
+require 'src/app/Models/CarModel.php';
 require 'src/app/Models/School.php';
 
 require 'src/app/Models/PriceShare.php';
