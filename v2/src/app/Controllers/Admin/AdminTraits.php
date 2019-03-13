@@ -6,6 +6,7 @@ use src\app\Models\Rides;
 use src\app\Models\School;
 use src\app\Models\User;
 use src\app\Models\Wallet;
+use src\app\Models\CarModel;
 trait AdminTraits {
 	public function createUser($req, $res) {
 
@@ -96,7 +97,8 @@ trait AdminTraits {
 				$dd->dd_car_capacity = $this->input['car_capacity'];
 				$dd->dd_admin_approved = 0;
 				$dd->dd_car_active = 1;
-				$dd->car_image = "https://res.cloudinary.com/moov-api/image/upload/v1552400783/public/EWB_7-8ths_Front_Whole_Car_Cut_Out_promoted_item_638_x_223.jpg";
+				$dd->car_image = CarModel::find($dd->dd_car_model_id)->cm_model_image;
+				//$dd->car_image = "https://res.cloudinary.com/moov-api/image/upload/v1552400783/public/EWB_7-8ths_Front_Whole_Car_Cut_Out_promoted_item_638_x_223.jpg";
 				$dd->save();
 
 				$bd = new BankDetails;
