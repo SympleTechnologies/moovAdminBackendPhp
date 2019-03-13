@@ -555,7 +555,7 @@ class DriverAuth extends Api_Controller {
 
 		$eduInst = $this->db->table('car_model')
 
-			->select("cm_model_name as name", "cm_id as id")->get();
+			->select("cm_model_name as name", "cm_id as id","cm_model_image as image")->get();
 
 		$result = array(
 
