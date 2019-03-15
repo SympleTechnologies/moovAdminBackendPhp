@@ -17,7 +17,7 @@ function iOSPush($token, $message) {
 
 	$notification = [
 		'title' => $message['title'],
-		'text' => $message['body'],
+		'text' => $message['message'],
 		'sound' => 'default',
 		'badge' => '1',
 	];
@@ -134,7 +134,7 @@ function iOSPush_rider($token, $message) {
 
 	$notification = [
 		'title' => $message['title'],
-		'text' => $message['body'],
+		'text' => $message['message'],
 		'sound' => 'default',
 		'badge' => '1',
 	];
