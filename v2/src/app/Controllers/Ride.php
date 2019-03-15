@@ -149,7 +149,7 @@ $dd->save();*/
 		$ride=Rides::find($rideId);
 		if(!$ride){
 			return $this->response->withJson([
-				'status'=>'error',
+				'status'=>false,
 				'message'=>"Ride not found!"
 			])
 			->withStatus(400);
@@ -181,7 +181,7 @@ $dd->save();*/
 
 		}
 		$output=[
-			'status'=>'success',
+			'status'=>true,
 			'message'=>"Notification has been sent!"
 		];
 		return $this->response->withJson($output);
