@@ -555,7 +555,11 @@ class DriverAuth extends Api_Controller {
 
 		$eduInst = $this->db->table('car_model')
 
-			->select("cm_model_name as name", "cm_id as id","cm_model_image as image")->get();
+			
+			
+			->select("cm_make_name as make","cm_model_name as model", "cm_id as id","cm_model_image as image","cm_year_start as year_start","cm_year_end as year_end")
+			->get()
+			->groupBy('make');
 
 		$result = array(
 
@@ -569,7 +573,7 @@ class DriverAuth extends Api_Controller {
 
 		);
 
-		return $this->response->withJson($result);
+		return $this->response->withJson($result)->withHeader('Cache-Control','public');
 	}
 
 	public function add_details() {
