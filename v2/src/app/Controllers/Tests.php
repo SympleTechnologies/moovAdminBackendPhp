@@ -19,16 +19,42 @@ class Tests extends Api_Controller
     public function test()
 
     {
-        // \set_time_limit(0);
-        // $jsonFile=file_get_contents('http://localhost/moov/scripts/image_data.json');
-        // $json=json_decode($jsonFile,true);
-        // foreach ($json as $value) {
-        //     CarModel::create([
-        //         'cm_model_name'=>$value['model'],
-        //         'cm_model_image'=>"https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars/".$value['image']
-        //     ]);
-        // }
-        // echo "Done!";
+        \set_time_limit(0);
+        $jsonFile = file_get_contents('http://localhost/moov/scripts/image_data.json');
+        $json = json_decode($jsonFile, true);
+        $carModels = [];
+        $count = 0;
+
+        foreach ($json as $value) {
+            $fromFilePath = 'C:\xampp\htdocs\moov\scripts\carimagery-filtered\\' . $value['image'];
+            $count++;
+            if ($count > 120) {
+                $url = \Cloudinary\Uploader::upload(
+                    $fromFilePath,
+                    [
+                        "use_filename" => true,
+                        "folder" => 'public/cars/',
+                        "overwrite" => true,
+                        "resource_type" => "image"
+                    ]
+                )['secure_url'];
+                if (@ob_get_contents()) {
+                    @ob_end_flush();
+                }
+                flush();
+                
+                print("Finished uploading: {$count}<br>");
+            }
+            /* array_push($carModels,[
+                'cm_make_name'=>$value['make'],
+                'cm_model_name'=>$value['model'],
+                'cm_model_image'=>"https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars/".$value['image'],
+                'cm_year_start'=>$value['year_start'],
+                'cm_year_end'=>$value['year_end']
+            ]); */
+        }
+        // CarModel::insert($carModels);
+        echo "Done!";
         die();
 
 
@@ -84,7 +110,7 @@ class Tests extends Api_Controller
 
 
 
-// $this->send_sms('+919020785587',"test works");
+        // $this->send_sms('+919020785587',"test works");
 
 
 
@@ -120,7 +146,7 @@ class Tests extends Api_Controller
 
 
 
-// $pdo = new \Slim\PDO\Database(DB_DSN, DB_USER, DB_PASSWORD);
+        // $pdo = new \Slim\PDO\Database(DB_DSN, DB_USER, DB_PASSWORD);
 
 
 
@@ -137,9 +163,6 @@ class Tests extends Api_Controller
 
 
     print_r($user); */
-
-
-
     }
 
 
@@ -183,9 +206,6 @@ class Tests extends Api_Controller
 
 
         echo $message->sid;
-
-
-
     }
 
 
@@ -218,12 +238,9 @@ class Tests extends Api_Controller
 
 
 
-     iOSPush_rider($deviceToken, $message);
+        iOSPush_rider($deviceToken, $message);
 
- // AndroidPush_rider($deviceToken, $message);
-
-
-
+        // AndroidPush_rider($deviceToken, $message);
     }
 
 
@@ -232,33 +249,25 @@ class Tests extends Api_Controller
 
     {
 
-       
+
 
 
 
         print_r($parsedBody);
-
-
-
     }
 
 
-    public function geotest(){
+    public function geotest()
+    {
 
- 
+
         // $Geocoder->setApiKey('AIzaSyB6aH2GUchtBI9Pfu6BA8eRTNvvEFCx5r0');
-$response =  \GeometryLibrary\PolyUtil::distanceToLine(
-              ['lat' => 61.387002, 'lng' => 23.890636], // point array [lat, lng]
-              ['lat' => 61.487002, 'lng' => 23.790636], // line startpoint array [lat, lng]
-              ['lat' => 60.48047, 'lng' => 22.052754] // line endpoint array [lat, lng]
-             );  
-             
-  echo $response; // 12325.124046196 in meters
-      
-      
+        $response =  \GeometryLibrary\PolyUtil::distanceToLine(
+            ['lat' => 61.387002, 'lng' => 23.890636], // point array [lat, lng]
+            ['lat' => 61.487002, 'lng' => 23.790636], // line startpoint array [lat, lng]
+            ['lat' => 60.48047, 'lng' => 22.052754] // line endpoint array [lat, lng]
+        );
+
+        echo $response; // 12325.124046196 in meters
     }
-
-
-
 }
-
