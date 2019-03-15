@@ -882,7 +882,7 @@ class Booking extends Api_Controller {
 
 					"message" => "A new ride has been booked",
 
-					'alert' => "A new ride has been booked",
+					'body' => "A new ride has been booked",
 
 					'sound' => 'default',
 
