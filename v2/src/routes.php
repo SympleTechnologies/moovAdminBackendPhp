@@ -118,6 +118,8 @@ $env['route'] = array(
 
 		"ride_stop" => '/rides/stop/{id}/{lat}/{long}',
 
+		"driver_near_notification" => '/rides/{id}/rider_notification',
+
 		"view_active_trip" => '/rides/driver/active/{id}',
 
 		"ride_start" => '/rides/start/{id}/{lat}/{long}',
@@ -201,6 +203,8 @@ $app->get($r_user['select_type'], 'Auth:get_usertype_list');
 
 $app->post($r_user['ride_add_rating'], 'Ride:add_rating');
 
+
+
 $app->get($r_user['view_user_details'], 'User:user_details');
 
 $app->get($r_user['view_rides'], 'Ride:user_view_previous_rides');
@@ -246,6 +250,7 @@ $app->post($r_driver['update_last_location'], 'Ride:update_location');
 $app->get($r_driver['view_driver_details'], 'User:driver_details');
 
 $app->get($r_driver['view_previous_trips'], 'Ride:driver_view_trips');
+$app->post($r_driver['driver_near_notification'], 'Ride:notifyRider');
 
 $app->get($r_driver['view_trip'], 'Ride:driver_trip');
 

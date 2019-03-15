@@ -11,6 +11,7 @@ use src\app\Models\Trips;
 use src\app\Models\User as Users;
 use src\app\models\Wallet;
 use src\config\Api_Controller;
+use Rakit\Validation\Validator;
 
 class Ride extends Api_Controller {
 
@@ -141,7 +142,50 @@ $dd->save();*/
 		return $this->response->withJson($output);
 
 	}
+	public function notifyRider($request, $response, $args){
 
+		$rideId=$args['id'];
+
+		$ride=Rides::find($rideId);
+		if(!$ride){
+			return $this->response->withJson([
+				'status'=>'error',
+				'message'=>"Ride not found!"
+			])
+			->withStatus(400);
+		}
+		$user=Users::find($ride->cr_user_id);
+		$user_device_type=$user->u_device_type;
+		$message = array(
+
+			"ride_id" => $rideId,
+
+			"trip_id" => $ride->cr_trip_id,
+
+			"title" => "Ride notification",
+
+			"message" => "Your driver is near!",
+
+			'alert' => "Your driver is near!",
+
+			'sound' => 'default',
+
+		);
+		if ($user_device_type == 'android') {
+
+			AndroidPush_rider($ride->cr_user_id, $message);
+
+		} elseif ($user_device_type == 'iOS') {
+
+			iOSPush_rider($ride->cr_user_id, $message);
+
+		}
+		$output=[
+			'status'=>'success',
+			'message'=>"Notification has been sent!"
+		];
+		return $this->response->withJson($output);
+	}
 	public function add_rating() {
 
 		$id = $this->db->table('driver_ratings')->insertGetId([
