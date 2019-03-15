@@ -43,7 +43,7 @@ class Tests extends Api_Controller
 
     {
         \set_time_limit(0);
-        $jsonFile = file_get_contents('http://localhost/moov/scripts/image_data.json');
+        $jsonFile = file_get_contents('http://moov-php-backend.herokuapp.com/image_data.json');
         $json = json_decode($jsonFile, true);
         $carModels = [];
         $count = 0;
