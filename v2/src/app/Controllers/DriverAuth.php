@@ -541,6 +541,7 @@ class DriverAuth extends Api_Controller {
 	}
 
 	public function Car_models() {
+		set_time_limit(0);
 		$links = array(
 
 			"self" => $this->self,
