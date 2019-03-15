@@ -56,12 +56,13 @@ class Tests extends Api_Controller
 
             echo "Doing upload!<br/>";
             $url = \Cloudinary\Uploader::upload(
-                'http://themoovapp.com/cars/carimagery-filtered/' . $value['image'],
+                'C:\xampp\htdocs\moov\scripts\carimagery-thumb\\' . $value['image'],
                 [
                     "use_filename" => true,
                     "folder" => 'public/cars_images/',
                     "overwrite" => true,
-                    "resource_type" => "image"
+                    "resource_type" => "image",
+                    'unique_filename'=>false
                 ]
             )['secure_url'];
             array_push($carModels, [
@@ -71,6 +72,7 @@ class Tests extends Api_Controller
                 'cm_year_start' => $value['year_start'],
                 'cm_year_end' => $value['year_end']
             ]);
+            file_put_contents('data.json',json_encode($carModels));
 
             //echo "https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars/" . $value['image'].'---'.$url."---";
             ///}
