@@ -1220,6 +1220,8 @@ $dd->save();*/
 			"wallet_balance" => $users->w_amount,
 
 			"image" => $users->u_image,
+			"car_colour"=>$users->car_colour,
+			"car_image"=>$users->car_image,
 
 		);
 
