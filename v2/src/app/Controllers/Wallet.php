@@ -29,6 +29,7 @@ class Wallet extends Api_Controller {
 		$connection->rollBack();
 	}
 	public function calculate_amount_fee($amount) {
+		/*
 		$tax = .015;
 		$fixed = 100;
 		if ($amount <= 2500) {
@@ -37,7 +38,8 @@ class Wallet extends Api_Controller {
 			return round($amount + ($amount * $tax) + $fixed, 2);
 		}
 		return 0;
-
+		*/
+		return $amount;
 	}
 
 	public function view_balance($request, $response, $args) {
