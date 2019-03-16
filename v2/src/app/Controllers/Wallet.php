@@ -29,7 +29,6 @@ class Wallet extends Api_Controller {
 		$connection->rollBack();
 	}
 	public function calculate_amount_fee($amount) {
-		/*
 		$tax = .015;
 		$fixed = 100;
 		if ($amount <= 2500) {
@@ -38,8 +37,6 @@ class Wallet extends Api_Controller {
 			return round($amount + ($amount * $tax) + $fixed, 2);
 		}
 		return 0;
-		*/
-		return $amount;
 	}
 
 	public function view_balance($request, $response, $args) {
@@ -105,7 +102,7 @@ class Wallet extends Api_Controller {
 
 					't_access_code' => '',
 
-					't_amount' => $this->input['amount'],
+					't_amount' => $this->calculate_amount_fee($this->input['amount']),
 
 					't_currency' => '',
 
@@ -317,6 +314,11 @@ class Wallet extends Api_Controller {
 
 			$amountInNira = $amountinKobo / 100;
 
+			$amountToBeCreditedToWallet=$this->db->table('transactions')
+				->where('t_reference', $tranx->data->reference)
+				->first()
+				->t_amount;
+
 			$this->db->table('transactions')
 
 				->where('t_reference', $tranx->data->reference)
@@ -339,7 +341,7 @@ class Wallet extends Api_Controller {
 
 				}
 
-				$amount = ($balance->balance + $amountInNira);
+				$amount = ($balance->balance + $amountToBeCreditedToWallet);
 
 				$this->db->table('wallet')
 
