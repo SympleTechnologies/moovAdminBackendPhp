@@ -24,8 +24,47 @@ class Auth extends Api_Controller
 		$this->ncrypt->set_secret_iv($this->env['oauth_secret_iv']);
 		$this->ncrypt->set_cipher('AES-256-CBC'); //optional
 	}
+	private function validateLoginField()
+	{
+		$path = $this->request->getUri()->getPath();
+		$validator = new Validator([
+			'required' => ':attribute field is required',
+			'email' => ':email field is required',
+			'record_exists' => ":attribute doesn't match any user record"
+		]);
+		$validation = $validator->make($this->input, [
+			"email" => "required|email",
+			"password" => "required",
+			"device_type" => "required|in:android,iOS",
+			"push_token" => "required",
+			"app_version" => "required",
+			"device_id" => "required"
+		]);
+		$validation->validate();
+		return $validation;
+	}
 	public function login()
 	{
+		
+		$validation = $this->validateLoginField();
+		if ($validation->fails()) {
+			$response = array(
+
+				"status" => false,
+
+				"message" => "Input Validation Error!",
+				'errors' => $validation->errors()->toArray(),
+
+				"links" => array(
+
+					"self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath(),
+
+				),
+
+			);
+			return $this->response->withJson($response);
+		}
+
 		$links = array(
 			"self" => $this->self,
 			"forgot_password" => base_url($this->env['route']['user']['forgot']),
@@ -35,6 +74,7 @@ class Auth extends Api_Controller
 			'u_email' => $this->input['email'],
 			'u_password' => $this->input['password'],
 		);
+
 		$pushToken = $this->input['push_token'];
 		$deviceId = $this->input['device_id'];
 		$deviceType = $this->input['device_type'];
@@ -89,8 +129,53 @@ class Auth extends Api_Controller
 		}
 		return $this->response->withJson($output);
 	}
+	private function validateSocialLoginField()
+	{
+		$path = $this->request->getUri()->getPath();
+		$validator = new Validator([
+			'required' => ':attribute field is required',
+			'email' => ':email field is required',
+			'record_exists' => ":attribute doesn't match any user record"
+		]);
+		/* 
+		{
+	"provider":"google",
+	"uid":"115091704326471148109",
+	"device_id":"cZviA8jK0oc:APA91bFOBtjQIrafSRknBi7X2-dAmALisWkE_kB1IBOpAdi9yNXRCMowpPbiLwLzGyTXlI9ILraKk25ZGl8MdW9dR_w88wg57g655SPnsT95K7DYJaSEgqUj6tZ2ctoUggYkPMKSMNvn",
+	"device_type":"iOS",
+	"app_version":"2.0"
+}
+		*/
+		$validation = $validator->make($this->input, [
+			"provider" => "required|in:google,facebook",
+			"uid" => "required",
+			"device_type" => "required|in:android,iOS",
+			"app_version" => "required",
+			"device_id" => "required"
+		]);
+		$validation->validate();
+		return $validation;
+	}
 	public function social_login()
 	{
+		$validation=$this->validateSocialLoginField();
+		if ($validation->fails()) {
+			$response = array(
+
+				"status" => false,
+
+				"message" => "Input Validation Error!",
+				'errors' => $validation->errors()->toArray(),
+
+				"links" => array(
+
+					"self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath(),
+
+				),
+
+			);
+			return $this->response->withJson($response);
+		}
 		$links = array(
 			"self" => $this->self,
 			"forgot_password" => base_url($this->env['route']['user']['forgot']),
