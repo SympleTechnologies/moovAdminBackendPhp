@@ -29,4 +29,26 @@ class Api_Controller {
 
 	}
 
+	/**
+	 * Starts a database transaction
+	 */
+	public function beginTransaction() {
+		$connection = $this->db->getConnection();
+		$connection->beginTransaction();
+	}
+	/**
+	 * Commits a database transaction
+	 */
+	public function commitTransaction() {
+		$connection = $this->db->getConnection();
+		$connection->commit();
+	}
+	/**
+	 * Undo a database transaction
+	 */
+	public function rollbackTransaction() {
+		$connection = $this->db->getConnection();
+		$connection->rollback();
+	}
+
 }
