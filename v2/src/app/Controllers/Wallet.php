@@ -7,27 +7,6 @@ use src\app\Models\User as Users;
 use src\config\Api_Controller;
 
 class Wallet extends Api_Controller {
-	/**
-	 * summary
-	 */
-	public function beginTransaction() {
-		$connection = $this->db->getConnection();
-		$connection->beginTransaction();
-	}
-	/**
-	 * summary
-	 */
-	public function commitTransaction() {
-		$connection = $this->db->getConnection();
-		$connection->commit();
-	}
-	/**
-	 * Rollback transaction
-	 */
-	public function rollBackTransaction() {
-		$connection = $this->db->getConnection();
-		$connection->rollBack();
-	}
 	public function calculate_amount_fee($amount) {
 		$tax = .015;
 		$fixed = 100;
@@ -102,7 +81,7 @@ class Wallet extends Api_Controller {
 
 					't_access_code' => '',
 
-					't_amount' => $this->calculate_amount_fee($this->input['amount']),
+					't_amount' => $this->input['amount'],
 
 					't_currency' => '',
 
@@ -122,6 +101,7 @@ class Wallet extends Api_Controller {
 							'first_name' => $user->first_name,
 							'last_name' => $user->last_name,
 						],
+						'amount_with_tax'=>$this->calculate_amount_fee($this->input['amount'])
 					],
 				];
 			}
@@ -272,8 +252,8 @@ class Wallet extends Api_Controller {
 	}
 
 	public function verify_transaction() {
+		$this->beginTransaction();
 		$ref = "";
-
 		$reference = isset($this->input['reference']) ? $this->input['reference'] : '';
 
 		if (!$reference) {
@@ -310,10 +290,6 @@ class Wallet extends Api_Controller {
 
 			$userid = $this->input['userid'];
 
-			$amountinKobo = $tranx->data->amount;
-
-			$amountInNira = $amountinKobo / 100;
-
 			$amountToBeCreditedToWallet=$this->db->table('transactions')
 				->where('t_reference', $tranx->data->reference)
 				->first()
@@ -325,7 +301,7 @@ class Wallet extends Api_Controller {
 
 				->update([
 
-					't_access_code' => $tranx->data->reference, 't_amount' => $amountInNira, 't_currency' => $tranx->data->currency, 't_status' => 'completed', 't_started' => time_now(),
+					't_access_code' => $tranx->data->reference, 't_currency' => $tranx->data->currency, 't_status' => 'completed', 't_started' => time_now(),
 
 					't_response' => serialize($tranx->data),
 
@@ -362,6 +338,7 @@ class Wallet extends Api_Controller {
 					"data" => array("new_wallet_balance" => $amount),
 
 				);
+				$this->commitTransaction();
 
 			} else {
 
