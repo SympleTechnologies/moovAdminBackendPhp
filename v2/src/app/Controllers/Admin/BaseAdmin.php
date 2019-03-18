@@ -5,10 +5,8 @@ use src\app\Models\School;
 use src\app\Models\User;
 use src\config\Api_Controller;
 
-require_once 'TransactionTrait.php';
 class BaseAdmin extends Api_Controller {
 	use Roles;
-	use TransactionTrait;
 
 	const SUPERADMIN = 1;
 	const ADMIN = 2;
