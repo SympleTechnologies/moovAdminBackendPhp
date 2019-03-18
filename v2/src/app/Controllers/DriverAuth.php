@@ -16,6 +16,7 @@ use src\app\Models\UserLoginLog;
 use src\app\Models\Wallet;
 use src\config\Api_Controller;
 use src\config\Mail_Controller;
+use Rakit\Validation\Validator;
 
 class DriverAuth extends Api_Controller {
 	public function __construct($app) {
@@ -30,7 +31,43 @@ class DriverAuth extends Api_Controller {
 		$this->ncrypt->set_cipher('AES-256-CBC'); //optional
 	}
 
+	private function validateLoginField()
+	{
+		$validator = new Validator([
+			'required' => ':attribute field is required',
+			'email' => ':email field is required',
+			'record_exists' => ":attribute doesn't match any user record"
+		]);
+		$validation = $validator->make($this->input, [
+			"email" => "required|email",
+			"password" => "required",
+			"device_type" => "required|in:android,iOS",
+			"app_version" => "required",
+			"device_id" => "required"
+		]);
+		$validation->validate();
+		return $validation;
+	}
+
 	public function login() {
+		$validation = $this->validateLoginField();
+		if ($validation->fails()) {
+			$response = array(
+
+				"status" => false,
+
+				"message" => "Input Validation Error!",
+				'errors' => $validation->errors()->toArray(),
+
+				"links" => array(
+
+					"self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath(),
+
+				),
+
+			);
+			return $this->response->withJson($response);
+		}
 		$links = array(
 
 			"self" => $this->self,
@@ -49,7 +86,6 @@ class DriverAuth extends Api_Controller {
 
 		);
 
-		$pushToken = $this->input['push_token'];
 
 		$deviceId = $this->input['device_id'];
 
