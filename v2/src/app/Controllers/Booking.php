@@ -8,6 +8,7 @@ use src\app\Models\User as Users;
 use src\config\Api_Controller;
 use Rakit\Validation\Validator;
 use src\app\Helpers\RecordExistsValidatorRule;
+use src\app\Helpers\HWallet;
 
 class Booking extends Api_Controller {
 
@@ -358,7 +359,6 @@ class Booking extends Api_Controller {
 			);
 			return $this->response->withJson($booking_response);
 		}
-
 		$time = time_now();
 
 		$date = date('Y-m-d', strtotime($time));
@@ -391,6 +391,24 @@ class Booking extends Api_Controller {
 
 		$to_long = $this->input['to_long'];
 
+		$walletBalance=HWallet::balance($uid)->balance;
+		if($amount>$walletBalance){
+			$booking_response = array(
+
+				"status" => false,
+
+				"message" => "You do not have enough balance to book this ride!",
+
+				"links" => array(
+
+					"self" => $this->uri->getBaseUrl() . "" . $this->uri->getBasePath() . "/" . $this->uri->getPath(),
+
+				),
+
+			);
+			return $this->response->withJson($booking_response);
+		}
+
 		$mapData = $this->get_map_data($from, $to);
 
 		//echo json_encode($mapData);
@@ -415,6 +433,7 @@ class Booking extends Api_Controller {
 
 		$fullCordinates_latlng = $mapData['fullCordinates_latlng'];
 
+		
 		if (empty($polyline)) {
 
 			$this->logger->Error('Map Data', $mapData);
@@ -445,7 +464,6 @@ class Booking extends Api_Controller {
 
 		if ($drivers_distance = $this->getClosestCars($from_lat, $from_long, $groupby = "", $distance = $this->env['booking_distance'], $limit = 15,$user->u_edu_institution)) {
 			//find drivers near 15 km
-
 			// print_r($drivers_distance);
 
 			//get driver id
