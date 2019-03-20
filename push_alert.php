@@ -19,7 +19,7 @@ function iOSPush($token, $message) {
 		'title' => $message['title'],
 		'text' => $message['message'],
 		'sound' => 'default',
-		'badge' => '1',
+		//'badge' => '1',
 	];
 	$arrayToSend = [
 		"mutable_content" => true,
@@ -136,7 +136,7 @@ function iOSPush_rider($token, $message) {
 		'title' => $message['title'],
 		'text' => $message['message'],
 		'sound' => 'default',
-		'badge' => '1',
+		//'badge' => '1',
 	];
 	$arrayToSend = [
 		"mutable_content" => true,
