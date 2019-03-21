@@ -12,17 +12,21 @@ use src\app\Models\User as Users;
 use src\app\models\Wallet;
 use src\config\Api_Controller;
 use Rakit\Validation\Validator;
+use src\config\Mail_Controller;
 
-class Ride extends Api_Controller {
+class Ride extends Api_Controller
+{
 
 	//pending accept ride
 
-	public function is_valid_name($file) {
+	public function is_valid_name($file)
+	{
 		$filename = basename($file) . PHP_EOL;
 		return preg_match('/^([-\.\w]+)$/', $filename) > 0;
 	}
 
-	public function driver_shift() {
+	public function driver_shift()
+	{
 
 		$types = array("online", "offline");
 
@@ -42,7 +46,7 @@ class Ride extends Api_Controller {
 
 		if (in_array($status, $types)) {
 
-/*
+			/*
 $dd = DriverDetails::find($userid);
 
 $dd->dd_curent_status = $status;
@@ -88,7 +92,6 @@ $dd->save();*/
 				"message" => "Updated Successfully", //
 
 			);
-
 		} else {
 
 			$output = array(
@@ -98,14 +101,13 @@ $dd->save();*/
 				"message" => "Please choose a valid parameter",
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function update_location() {
+	public function update_location()
+	{
 
 		$userid = $this->input['userid'];
 
@@ -126,7 +128,6 @@ $dd->save();*/
 				"message" => "Updated Successfully", //
 
 			);
-
 		} else {
 
 			$output = array(
@@ -136,26 +137,25 @@ $dd->save();*/
 				"message" => "An error occured", //
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
-	public function notifyRider($request, $response, $args){
+	public function notifyRider($request, $response, $args)
+	{
 
-		$rideId=$args['id'];
+		$rideId = $args['id'];
 
-		$ride=Rides::find($rideId);
-		if(!$ride){
+		$ride = Rides::find($rideId);
+		if (!$ride) {
 			return $this->response->withJson([
-				'status'=>false,
-				'message'=>"Ride not found!"
+				'status' => false,
+				'message' => "Ride not found!"
 			])
-			->withStatus(400);
+				->withStatus(400);
 		}
-		$user=Users::find($ride->cr_user_id);
-		$user_device_type=$user->u_device_type;
+		$user = Users::find($ride->cr_user_id);
+		$user_device_type = $user->u_device_type;
 		$message = array(
 
 			"ride_id" => $rideId,
@@ -174,19 +174,18 @@ $dd->save();*/
 		if ($user_device_type == 'android') {
 
 			AndroidPush_rider($ride->cr_user_id, $message);
-
 		} elseif ($user_device_type == 'iOS') {
 
 			iOSPush_rider($ride->cr_user_id, $message);
-
 		}
-		$output=[
-			'status'=>true,
-			'message'=>"Notification has been sent!"
+		$output = [
+			'status' => true,
+			'message' => "Notification has been sent!"
 		];
 		return $this->response->withJson($output);
 	}
-	public function add_rating() {
+	public function add_rating()
+	{
 
 		$id = $this->db->table('driver_ratings')->insertGetId([
 
@@ -211,7 +210,6 @@ $dd->save();*/
 				"message" => "An error occured, please try again!",
 
 			);
-
 		} else {
 
 			$output = array(
@@ -221,14 +219,13 @@ $dd->save();*/
 				"message" => "Rating added successfully",
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function driver_view_trips($request, $response, $args) {
+	public function driver_view_trips($request, $response, $args)
+	{
 
 		$driverid = $args['id'];
 
@@ -246,13 +243,13 @@ $dd->save();*/
 
 		$details_data[] = $this->db->table('cab_trip')
 
-		// ->select('*')
+			// ->select('*')
 
 			->where($details)
 
 			->orderBy('cab_trip.ct_id', 'desc')
 
-		//->limit(1)
+			//->limit(1)
 
 			->get()->toArray();
 
@@ -262,7 +259,7 @@ $dd->save();*/
 
 			foreach ($trips as $trip) {
 
-// print_r($trip);
+				// print_r($trip);
 
 				$details = array(
 
@@ -304,9 +301,7 @@ $dd->save();*/
 					"rides" => $rides,
 
 				);
-
 			}
-
 		}
 
 		if (!empty($trips_data)) {
@@ -322,7 +317,6 @@ $dd->save();*/
 				"online_status" => $this->driver_status($driverid), //
 
 			);
-
 		} else {
 
 			$output = array(
@@ -334,22 +328,21 @@ $dd->save();*/
 				"online_status" => $this->driver_status($driverid), //
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function driver_status($id) {
+	public function driver_status($id)
+	{
 
 		$status = DriverDetails::where('dd_driver_id', $id)->pluck('dd_curent_status')->toArray();
 
 		return $status[0];
-
 	}
 
-	public function driver_trip($request, $response, $args) {
+	public function driver_trip($request, $response, $args)
+	{
 
 		$tripid = $args['id'];
 
@@ -373,10 +366,10 @@ $dd->save();*/
 
 			->first();
 
-// print_r($tripdata);
+		// print_r($tripdata);
 
 		$trips_data = array();
-		$image_url =$users['u_image'];
+		$image_url = $users['u_image'];
 
 		$rides = Rides::select('cr_id as ride_id', 'cr_start_name as start', 'cr_stop_name as stop', 'cr_amount as amount', 'cr_payment_status as payment_status', 'cr_booked_on as booked_on', "cr_cab_ride_status as status", 'u_first_name')
 			->selectRaw("CONCAT('" . $image_url . "',`u_image`)  AS image")
@@ -425,7 +418,6 @@ $dd->save();*/
 				"online_status" => $this->driver_status($tripdata->ct_driver_id), //
 
 			);
-
 		} else {
 
 			$output = array(
@@ -437,14 +429,13 @@ $dd->save();*/
 				"online_status" => $this->driver_status($tripdata->ct_driver_id), //
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function pay() {
+	public function pay()
+	{
 
 		$userid = $this->input['userid'];
 
@@ -472,7 +463,6 @@ $dd->save();*/
 				"message" => "Amount failed", //
 
 			);
-
 		} else {
 
 			// $this->db->table('cab_rides')
@@ -497,7 +487,7 @@ $dd->save();*/
 
 			$w_balance = HWallet::balance($userid);
 
-			$b = (float) $w_balance->balance;
+			$b = (float)$w_balance->balance;
 
 			$new_wallet_balance = $b - $amount;
 
@@ -656,7 +646,6 @@ $dd->save();*/
 					"message" => "paid successfully", //
 
 				);
-
 			} else {
 
 				$output = array(
@@ -666,16 +655,14 @@ $dd->save();*/
 					"message" => "Insufficient balance, Please recharge wallet,", //
 
 				);
-
 			}
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function start_ride($request, $response, $args) {
+	public function start_ride($request, $response, $args)
+	{
 
 		$rideid = $args['id'];
 		$lat = $args['lat'];
@@ -716,13 +703,10 @@ $dd->save();*/
 			if ($user_device_type == 'android') {
 
 				AndroidPush_rider($user_device_id, $message);
-
 			} elseif ($user_device_type == 'iOS') {
 
 				iOSPush_rider($user_device_id, $message);
-
 			}
-
 		}
 
 		$status = $this->db->table('cab_rides')
@@ -748,7 +732,6 @@ $dd->save();*/
 				"message" => "Ride Started", //
 
 			);
-
 		} else {
 
 			$output = array(
@@ -758,14 +741,13 @@ $dd->save();*/
 				"message" => "An error occured", //
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function pay_at_stop($rideid) {
+	public function pay_at_stop($rideid)
+	{
 
 		$ride_details = $this->db->table('cab_rides')->where('cr_id', $rideid)->first();
 
@@ -775,7 +757,7 @@ $dd->save();*/
 
 		$w_balance = HWallet::balance($userid);
 
-		$b = (float) $w_balance->balance;
+		$b = (float)$w_balance->balance;
 
 		$new_wallet_balance = $b - $amount;
 
@@ -937,17 +919,15 @@ $dd->save();*/
 			]);
 
 			return true;
-
 		} else {
 
 			return false;
-
 		}
-
 	}
 
-	public function stop_ride($request, $response, $args) {
-
+	public function stop_ride($request, $response, $args)
+	{
+		\set_time_limit(0);
 		$rideid = $args['id'];
 		$lat = $args['lat'];
 		$long = $args['long'];
@@ -971,7 +951,6 @@ $dd->save();*/
 		if (isset($user_device_id)) {
 
 			$message = array(
-
 				"ride_id" => $rideid,
 
 				"title" => "Ride Completed",
@@ -987,13 +966,10 @@ $dd->save();*/
 			if ($user_device_type == 'android') {
 
 				AndroidPush_rider($user_device_id, $message);
-
 			} elseif ($user_device_type == 'iOS') {
 
 				iOSPush_rider($user_device_id, $message);
-
 			}
-
 		}
 
 		$status = $this->db->table('cab_rides')
@@ -1017,19 +993,17 @@ $dd->save();*/
 			Trips::where('ct_id', $trip['cr_trip_id'])
 
 				->update(['ct_trip_status' => 'completed', 'ct_trip_end' => time_now()]);
-
 		} else {
 
 			Trips::where('ct_id', $trip['cr_trip_id'])
 
 				->update(['ct_trip_status' => 'ontrip']);
-
 		}
 
 		if ($status) {
 
 			$payment = $this->pay_at_stop($rideid);
-
+			$this->send_ride_receipt($rideid);
 			$output = array(
 
 				"status" => true,
@@ -1039,7 +1013,6 @@ $dd->save();*/
 				"payment" => $payment,
 
 			);
-
 		} else {
 
 			$output = array(
@@ -1051,18 +1024,59 @@ $dd->save();*/
 				"payment" => false,
 
 			);
-
 		}
 
 		$output['udata'] = $userdata;
 
 		return $this->response->withJson($output);
+	}
+	private function send_ride_receipt($rideId)
+	{
+		$ride = Rides::find($rideId);
+		$trip = Trips::find($ride->cr_trip_id);
+		$driver_details = $this->driver_details($trip->ct_driver_id);
 
+		$user_details = Users::find($ride->cr_user_id);
+		$mailer = new Mail_Controller();
+		
+		$driverloc = $this->driver_location($trip->ct_driver_id);
+		$drive_details = $this->GetDrivingDistance($ride->cr_start_lat, $driverloc->dd_current_lat, $ride->cr_start_long, $driverloc->dd_current_long);
+		$pickUpAddress=$trip->ct_trip_start_from;
+		$pickupTitle=explode(',',$pickUpAddress)[0];
+		$destinationAddress=$trip->ct_trip_start_from;
+		$destinationTitle=explode(',',$destinationAddress)[0];
+		$maildata = [
+			"to" => $user_details->u_email,
+			'subject' => "Moov ride receipt",
+			'view_page' => 'emails/ride_receipt.html',
+			'view_data' => [
+				'user' => [
+					'first_name' => $user_details->u_first_name
+				],
+				'driver' => [
+					'display_name' => $driver_details['first_name'] . " " . $driver_details['last_name'],
+					'profile_picture'=>$driver_details['image'],
+					'car_plate_number'=>$driver_details['vehicle_no']
+				],
+				'trip' => [
+					'amount'=>$trip->ct_amount,
+					'pickup_title'=>$pickupTitle,
+					'pickup_description'=>$pickUpAddress,
+					'destination_title'=>$destinationTitle,
+					'destination_description'=>$destinationAddress,
+					'distance'=>@$drive_details['distance']?$drive_details['distance']:"1 M",
+					'time'=>@$drive_details['time']?$drive_details['time']:"1 M",
+				]
+
+			]
+		];
+		$mailer->send_mail($maildata);
 	}
 
-	public function cancel_ride($request, $response, $args) {
+	public function cancel_ride($request, $response, $args)
+	{
 
-// 'booked'
+		// 'booked'
 
 		$rideid = $args['id'];
 		$type = $args['type'];
@@ -1101,7 +1115,6 @@ $dd->save();*/
 				->update([
 					"w_amount" => $balance,
 				]);
-
 		}
 
 		//////////////
@@ -1122,13 +1135,11 @@ $dd->save();*/
 			Trips::where('ct_id', $trip['cr_trip_id'])
 
 				->update(['ct_trip_status' => 'completed', 'ct_trip_end' => time_now()]);
-
 		} else {
 
 			Trips::where('ct_id', $trip['cr_trip_id'])
 
 				->update(['ct_trip_status' => 'ontrip']);
-
 		}
 
 		if ($status) {
@@ -1161,13 +1172,10 @@ $dd->save();*/
 				if ($user_device_type == 'android') {
 
 					AndroidPush($user_device_id, $message);
-
 				} elseif ($user_device_type == 'iOS') {
 
 					iOSPush($user_device_id, $message);
-
 				}
-
 			}
 
 			$output = array(
@@ -1178,7 +1186,6 @@ $dd->save();*/
 				// "dd"=>$driverdata
 
 			);
-
 		} else {
 
 			$output = array(
@@ -1188,14 +1195,13 @@ $dd->save();*/
 				"message" => "An error occured", //
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function driver_location($userid) {
+	public function driver_location($userid)
+	{
 		$user = $this->db->table('driver_details')
 			->select('dd_current_lat', 'dd_current_long')
 			->where('driver_details.dd_driver_id', '=', $userid)
@@ -1204,7 +1210,8 @@ $dd->save();*/
 		return $user;
 	}
 
-	public function driver_details($userid) {
+	public function driver_details($userid)
+	{
 
 
 		$users = $this->db->table('users')
@@ -1264,18 +1271,20 @@ $dd->save();*/
 			"wallet_balance" => $users->w_amount,
 
 			"image" => $users->u_image,
-			"car_colour"=>$users->car_colour,
-			"car_image"=>$users->car_image,
+			"car_colour" => $users->car_colour,
+			"car_image" => $users->car_image,
 
 		);
 
-		$dd_array = array_map(function ($val) {return is_null($val) ? "" : $val;}, $details);
+		$dd_array = array_map(function ($val) {
+			return is_null($val) ? "" : $val;
+		}, $details);
 
 		return $dd_array;
-
 	}
 
-	public function user_view_previous_rides($request, $response, $args) {
+	public function user_view_previous_rides($request, $response, $args)
+	{
 
 		$userid = $args['id'];
 
@@ -1317,11 +1326,9 @@ $dd->save();*/
 			if (!empty($ride['cr_payement_time'])) {
 
 				$payment_time = $ride['cr_payement_time'];
-
 			} else {
 
 				$payment_time = "";
-
 			}
 
 			$rides_data[] = array(
@@ -1357,7 +1364,6 @@ $dd->save();*/
 				'driver_data' => $driverDetails,
 
 			);
-
 		}
 
 		if (!empty($rides_data)) {
@@ -1373,7 +1379,6 @@ $dd->save();*/
 				"data" => $rides_data,
 
 			);
-
 		} else {
 
 			$output = array(
@@ -1385,14 +1390,13 @@ $dd->save();*/
 				"message" => "No rides found", //
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function user_view_current_ride($request, $response, $args) {
+	public function user_view_current_ride($request, $response, $args)
+	{
 
 		$userid = $args['id'];
 
@@ -1437,11 +1441,9 @@ $dd->save();*/
 				if (!empty($ride['cr_payement_time'])) {
 
 					$payment_time = $ride['cr_payement_time'];
-
 				} else {
 
 					$payment_time = "";
-
 				}
 				$driverDetails = $this->driver_details($trips_details_data['ct_driver_id']);
 				$driverloc = $this->driver_location($trips_details_data['ct_driver_id']);
@@ -1504,7 +1506,6 @@ $dd->save();*/
 					"data" => $rides_data,
 
 				);
-
 			} else {
 
 				$output = array(
@@ -1516,9 +1517,7 @@ $dd->save();*/
 					"message" => "No rides found", //
 
 				);
-
 			}
-
 		} else {
 
 			$output = array(
@@ -1531,14 +1530,13 @@ $dd->save();*/
 				"message" => "No rides found", //
 
 			);
-
 		}
 
 		return $this->response->withJson($output);
-
 	}
 
-	public function get_polyline($origin, $destination) {
+	public function get_polyline($origin, $destination)
+	{
 
 		$googleApiKey = $this->env['google_map_api'];
 
@@ -1584,7 +1582,6 @@ $dd->save();*/
 			$points = \Polyline::decode($locations['polyline']['points']);
 
 			$poly[] = \Polyline::pair($points);
-
 		}
 
 		$new = array_reduce($poly, 'array_merge', array());
@@ -1601,7 +1598,8 @@ $dd->save();*/
 		return $data;
 	}
 
-	public function rider_view_current_trip($request, $response, $args) {
+	public function rider_view_current_trip($request, $response, $args)
+	{
 
 		$userid = $args['id'];
 		// $u_lat = $args['lat'];
@@ -1632,10 +1630,22 @@ $dd->save();*/
 		);
 
 		$trips_data = array();
-		$image_url =$users['u_image'];
+		$image_url = $users['u_image'];
 
-		$rides = Rides::select('cr_id as ride_id', 'cr_user_id as u_id', 'cr_start_name as start', 'cr_stop_name as stop', 'cr_amount as amount', 'cr_payment_status as payment_status', 'cr_booked_on as booked_on', "cr_cab_ride_status as status", 'u_first_name', 'cr_start_lat',
-			'cr_start_long', 'cr_polyline')
+		$rides = Rides::select(
+			'cr_id as ride_id',
+			'cr_user_id as u_id',
+			'cr_start_name as start',
+			'cr_stop_name as stop',
+			'cr_amount as amount',
+			'cr_payment_status as payment_status',
+			'cr_booked_on as booked_on',
+			"cr_cab_ride_status as status",
+			'u_first_name',
+			'cr_start_lat',
+			'cr_start_long',
+			'cr_polyline'
+		)
 			->selectRaw("CONCAT('" . $image_url . "',`u_image`)  AS image")
 
 			->where($details)
@@ -1643,7 +1653,7 @@ $dd->save();*/
 			->orderBy('cab_rides.cr_id', 'desc')
 			->leftJoin('users', 'cab_rides.cr_user_id', '=', 'users.u_id')
 			->get()->toArray();
-// for ($i = 0; $i < count($rides); $i++) {
+		// for ($i = 0; $i < count($rides); $i++) {
 		//     $image = $rides['image'];
 		//     if (!$this->is_valid_name($image)) {
 		//         $rides[$i]['image'] = "";
@@ -1657,7 +1667,7 @@ $dd->save();*/
 			$start_lat = $ride['cr_start_lat'];
 			$start_long = $ride['cr_start_long'];
 
-// $response =  \GeometryLibrary\PolyUtil::distanceToLine(
+			// $response =  \GeometryLibrary\PolyUtil::distanceToLine(
 			//             ['lat' => $driver_locations->dd_current_lat, 'lng' => $driver_locations->dd_current_long], // point array [lat, lng]
 			//               ['lat' =>$driver_locations->dd_current_lat, 'lng' => $driver_locations->dd_current_long], // line startpoint array [lat, lng]
 			//               ['lat' => $start_lat, 'lng' =>$start_long] // line endpoint array [lat, lng]
@@ -1689,16 +1699,15 @@ $dd->save();*/
 				'status' => $ride['status'],
 				'u_first_name' => $ride['u_first_name'],
 				'image' => $ride['image'],
-// 'distance_to_user'=>number_format($response, 2, '.', ''), // 12325.124046196 in meters
+				// 'distance_to_user'=>number_format($response, 2, '.', ''), // 12325.124046196 in meters
 				'distance_to_user' => $drive_poly['distance'], // 12325.124046196 in meters
 				'path_to_user' => $drive_poly['line_to_driver'], // 12325.124046196 in meters
 				'path_to_user_cordinates' => $drive_locs, // 12325.124046196 in meters
 				"poly_lines" => array('start' => reset($locations_poly), 'end' => end($locations_poly)),
-// "poly_lines"=> \GeometryLibrary\PolyUtil::decode($ride['cr_polyline']),
+				// "poly_lines"=> \GeometryLibrary\PolyUtil::decode($ride['cr_polyline']),
 				"poly_line" => ($ride['cr_polyline']),
 			);
-// $rides_with_distanc1e[]=$response; // 12325.124046196 in meters
-
+			// $rides_with_distanc1e[]=$response; // 12325.124046196 in meters
 		}
 		usort($rides_with_distance, function ($a, $b) {
 			return $a['distance_to_user'] <=> $b['distance_to_user'];
@@ -1738,7 +1747,6 @@ $dd->save();*/
 					"online_status" => $this->driver_status($userid), //
 
 				);
-
 			} else {
 
 				$output = array(
@@ -1750,9 +1758,7 @@ $dd->save();*/
 					"online_status" => $this->driver_status($userid), //
 
 				);
-
 			}
-
 		} else {
 
 			$output = array(
@@ -1764,7 +1770,6 @@ $dd->save();*/
 				"online_status" => $this->driver_status($userid), //
 
 			);
-
 		}
 
 		// $output['tests']=$rides_with_distance ;
@@ -1772,9 +1777,10 @@ $dd->save();*/
 		return $this->response->withJson($output);
 	}
 
-	public function GetDrivingDistance($lat1, $lat2, $long1, $long2) {
+	public function GetDrivingDistance($lat1, $lat2, $long1, $long2)
+	{
 
-		$key=get_env('google_map_api');
+		$key = get_env('google_map_api');
 		$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" . $lat1 . "," . $long1 . "&destinations=" . $lat2 . "," . $long2 . "&mode=driving&language=pl-PL&key={$key}";
 		$ch = curl_init();
 
@@ -1801,7 +1807,5 @@ $dd->save();*/
 		$time = @$response_a['rows'][0]['elements'][0]['duration']['text'];
 
 		return array('distance' => $dist, 'time' => $time);
-
 	}
-
 }
