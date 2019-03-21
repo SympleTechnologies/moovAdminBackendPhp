@@ -284,7 +284,7 @@ class Auth extends Api_Controller
 				"phone" => "required|numeric",
 				"user_type" => "required|numeric",
 				"phone_country" => 'required|regex:/^\+\d+?$/',
-				"gender" => "required|in:male,female",
+				//"gender" => "required|in:male,female",
 				"auth_mode" => "required|in:social",
 				"auth_provider" => "required|in:google,facebook",
 				"auth_uid" => "required",
@@ -304,7 +304,7 @@ class Auth extends Api_Controller
 				"phone" => "required|numeric",
 				"user_type" => "required|numeric",
 				"phone_country" => 'required|regex:/^\+\d+?$/',
-				"gender" => "required|in:male,female",
+				//"gender" => "required|in:male,female",
 				"auth_mode" => "required|in:email",
 				"device_type" => "required|in:android,iOS",
 				"push_token" => "required",
@@ -351,11 +351,6 @@ class Auth extends Api_Controller
 			} else {
 				$userpassword = $this->input['password'];
 			}
-
-			$gender = strtolower($this->input['gender']);
-
-			$filename = $gender . '.png';
-			//  $filename = $gender . '.png';
 			$links = array(
 				"self" => $this->self,
 				"forgot_password" => base_url($this->env['route']['user']['forgot']),
@@ -377,7 +372,6 @@ class Auth extends Api_Controller
 			$users->u_password = $userpassword;
 			$users->u_edu_institution = $this->input['college'];
 			$users->u_phone = $this->input['phone'];
-			$users->u_gender = $gender;
 			$users->u_auth_mode = @$this->input['auth_mode'];
 			$users->u_auth_provider = @$this->input['auth_provider'];
 			$users->u_auth_uid = @$this->input['auth_uid'];
