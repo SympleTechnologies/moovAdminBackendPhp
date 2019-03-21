@@ -24,8 +24,8 @@ function iOSPush($token, $message) {
 	$arrayToSend = [
 		"mutable_content" => true,
 		'data' => [
-			'ride_id' => $message['ride_id'],
-			'trip_id' => $message['trip_id'],
+			'ride_id' => @$message['ride_id'],
+			'trip_id' => @$message['trip_id'],
 		],
 		'to' => $token,
 		'notification' => $notification,
@@ -80,9 +80,9 @@ function AndroidPush($deviceToken = '', $message = array()) {
 
 			'type' => 'New',
 
-			'ride_id' => $message['ride_id'],
+			'ride_id' => @$message['ride_id'],
 
-			'trip_id' => $message['trip_id'],
+			'trip_id' => @$message['trip_id'],
 
 			'title' => $message['title'],
 
@@ -141,8 +141,8 @@ function iOSPush_rider($token, $message) {
 	$arrayToSend = [
 		"mutable_content" => true,
 		'data' => [
-			'ride_id' => $message['ride_id'],
-			'trip_id' => $message['trip_id'],
+			'ride_id' => @$message['ride_id'],
+			'trip_id' => @$message['trip_id'],
 		],
 		'to' => $token,
 		'notification' => $notification,
@@ -195,9 +195,9 @@ function AndroidPush_rider($deviceToken = '', $message = array()) {
 
 			'type' => 'New',
 
-			'ride_id' => $message['ride_id'],
+			'ride_id' => @$message['ride_id'],
 
-			'trip_id' => $message['trip_id'],
+			'trip_id' => @$message['trip_id'],
 
 			'title' => $message['title'],
 
