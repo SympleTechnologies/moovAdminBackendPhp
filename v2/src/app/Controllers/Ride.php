@@ -1043,7 +1043,7 @@ $dd->save();*/
 		$drive_details = $this->GetDrivingDistance($ride->cr_start_lat, $driverloc->dd_current_lat, $ride->cr_start_long, $driverloc->dd_current_long);
 		$pickUpAddress=$trip->ct_trip_start_from;
 		$pickupTitle=explode(',',$pickUpAddress)[0];
-		$destinationAddress=$trip->ct_trip_start_from;
+		$destinationAddress=$trip->ct_trip_start_to;
 		$destinationTitle=explode(',',$destinationAddress)[0];
 		$maildata = [
 			"to" => $user_details->u_email,
