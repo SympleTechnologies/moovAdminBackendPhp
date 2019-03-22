@@ -1212,7 +1212,7 @@ $dd->save();*/
 
 	public function driver_details($userid)
 	{
-
+		\set_time_limit(100);
 
 		$users = $this->db->table('users')
 
@@ -1271,10 +1271,9 @@ $dd->save();*/
 			"image" => $users->u_image,
 			//Car details
 			"car_colour" => $users->car_colour,
-			"car_image" => $users->cm_image_name,
-			"car_model" => $users->cm_model_name,
-			"car_make" => $users->cm_make_name,
-
+			"car_image" => @$users->cm_model_image,
+			"car_model" => @$users->cm_model_name,
+			"car_make" => @$users->cm_make_name,
 		);
 
 		$dd_array = array_map(function ($val) {
