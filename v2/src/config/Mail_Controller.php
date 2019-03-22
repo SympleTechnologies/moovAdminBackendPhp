@@ -44,7 +44,7 @@ class Mail_Controller extends Api_Controller {
 	public function sendMailWithMailer($details = array()) {
 		$mail = new PHPMailer(true);
 		try {
-			$mail->SMTPDebug = 0;
+			$mail->SMTPDebug = get_env('MAIL_DEBUG',0);
 			$mail->isSMTP();
 			$mail->Host = get_env('MAIL_HOST');
 			$mail->SMTPAuth = true;
