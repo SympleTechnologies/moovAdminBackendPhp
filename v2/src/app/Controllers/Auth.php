@@ -53,7 +53,7 @@ class Auth extends Api_Controller
 
 				"status" => false,
 
-				"message" => "Input Validation Error!",
+				"message" => $validation->errors()->all()[0],
 				'errors' => $validation->errors()->toArray(),
 
 				"links" => array(
@@ -165,7 +165,7 @@ class Auth extends Api_Controller
 
 				"status" => false,
 
-				"message" => "Input Validation Error!",
+				"message" => $validation->errors()->all()[0],
 				'errors' => $validation->errors()->toArray(),
 
 				"links" => array(
@@ -333,7 +333,7 @@ class Auth extends Api_Controller
 
 				"status" => false,
 
-				"message" => "Input Validation Error!",
+				"message" => $validation->errors()->all()[0],
 				'errors' => $validation->errors()->toArray(),
 
 				"links" => array(
