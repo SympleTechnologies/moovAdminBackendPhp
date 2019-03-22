@@ -32,6 +32,7 @@ class Auth extends Api_Controller
 			'email' => ':email field is required',
 			'record_exists' => ":attribute doesn't match any user record"
 		]);
+		$this->input['email']=@trim(preg_replace('/\s+/', ' ',$this->input['email']));
 		$validation = $validator->make($this->input, [
 			"email" => "required|email",
 			"password" => "required",
@@ -273,6 +274,7 @@ class Auth extends Api_Controller
 			'email' => ':email field is required',
 			'record_exists' => ":attribute doesn't match any user record"
 		]);
+		$this->input['email']=@trim(preg_replace('/\s+/', ' ',$this->input['email']));
 		if ($path == 'auth/social_registration') {
 			//Social Registration
 
