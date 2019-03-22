@@ -831,7 +831,7 @@ class User extends Api_Controller
 
 				"status" => false,
 
-				"message" => "Invalid user input!",
+				"message" => $validation->errors()->all()[0],
 
 				'errors' => $validation->errors()->toArray(),
 
@@ -1001,7 +1001,7 @@ class User extends Api_Controller
 
 				"status" => false,
 
-				"message" => "User input validation error!",
+				"message" => $validation->errors()->all()[0],
 
 				'errors' => $validation->errors()->toArray(),
 

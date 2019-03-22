@@ -347,7 +347,7 @@ class Booking extends Api_Controller {
 
 				"status" => false,
 
-				"message" => "Invalid Request Body",
+				"message" => $validation->errors()->all()[0],
 				'errors'=>$validation->errors()->toArray(),
 
 				"links" => array(
