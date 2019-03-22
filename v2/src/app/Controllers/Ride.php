@@ -1256,8 +1256,6 @@ $dd->save();*/
 
 			"u_device_id" => $users->u_device_id,
 
-			"car_model" => $users->cm_model_name,
-
 			"car_capacity" => $users->dd_car_capacity,
 
 			"license_no" => $users->dd_license,
@@ -1271,8 +1269,11 @@ $dd->save();*/
 			"wallet_balance" => $users->w_amount,
 
 			"image" => $users->u_image,
+			//Car details
 			"car_colour" => $users->car_colour,
-			"car_image" => $users->car_image,
+			"car_image" => $users->cm_image_name,
+			"car_model" => $users->cm_model_name,
+			"car_make" => $users->cm_make_name,
 
 		);
 

@@ -1291,8 +1291,6 @@ class Booking extends Api_Controller {
 
 			"u_device_id" => $users->u_device_id,
 
-			"car_model" => $users->cm_model_name,
-
 			"car_capacity" => $users->dd_car_capacity,
 
 			"license_no" => $users->dd_license,
@@ -1306,11 +1304,17 @@ class Booking extends Api_Controller {
 			"ratings" => round($ratings, 2),
 
 			"wallet_balance" => $users->w_amount,
+			
 			"total_rides" => $total_rides,
-			"car_colour"=>$users->car_colour,
-			"car_image"=>$users->car_image,
 
-			"image" => $users->u_image
+			"image" => $users->u_image,
+			//Car details
+			"car_colour" => $users->car_colour,
+			"car_image" => $users->cm_image_name,
+			"car_model" => $users->cm_model_name,
+			"car_make" => $users->cm_make_name,
+
+			
 		);
 
 		$array = array_map(function ($val) {return is_null($val) ? "" : $val;}, $details);
