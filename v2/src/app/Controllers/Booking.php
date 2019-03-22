@@ -1310,9 +1310,9 @@ class Booking extends Api_Controller {
 			"image" => $users->u_image,
 			//Car details
 			"car_colour" => $users->car_colour,
-			"car_image" => $users->cm_image_name,
-			"car_model" => $users->cm_model_name,
-			"car_make" => $users->cm_make_name,
+			"car_image" => @$users->cm_model_image,
+			"car_model" => @$users->cm_model_name,
+			"car_make" => @$users->cm_make_name,
 
 			
 		);
