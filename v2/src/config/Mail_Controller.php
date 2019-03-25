@@ -5,11 +5,13 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use src\config\Api_Controller;
 
-class Mail_Controller extends Api_Controller {
+class Mail_Controller extends Api_Controller
+{
 	private $sender_email;
 	private $sender_email_password;
 
-	public function __construct() {
+	public function __construct()
+	{
 
 		/*   $this->sender_email          =
 			        $this->sender_email_password = 'jijinsics123';
@@ -17,16 +19,17 @@ class Mail_Controller extends Api_Controller {
 			        $this->sender_port           = '587';
 		*/
 		parent::__construct();
-
 	}
-	public function send_mail($details = array()) {
+	public function send_mail($details = array())
+	{
 		if (get_env('MAIL_PRETEND')) {
 			return $this->pretendToSendMail($details);
 		} else {
 			return $this->sendMailWithMailer($details);
 		}
 	}
-	public function pretendToSendMail($details = array()) {
+	public function pretendToSendMail($details = array())
+	{
 		$subject = $details['subject'];
 		$to = $details['to'];
 		$message = $this->app->view->fetch($details['view_page'], $details['view_data']);
@@ -41,31 +44,26 @@ class Mail_Controller extends Api_Controller {
 		$this->logger->info($logMessage);
 		return true;
 	}
-	public function sendMailWithMailer($details = array()) {
-		$mail = new PHPMailer(true);
+	public function sendMailWithMailer($details = array())
+	{
 		try {
-			$mail->SMTPDebug = get_env('MAIL_DEBUG',0);
-			$mail->isSMTP();
-			$mail->Host = get_env('MAIL_HOST');
-			$mail->SMTPAuth = true;
-			$mail->Username = get_env('MAIL_USERNAME');
-			$mail->Password = get_env('MAIL_PASSWORD');
-			$mail->SMTPSecure = get_env('MAIL_ENCRYPTION');
-			$mail->Port = get_env('MAIL_PORT');
-			$mail->setFrom(get_env('MAIL_USERNAME'), "MOOV ADMIN");
-			$mail->addAddress($details['to']);
-			// $mail->addReplyTo($this->sender_email, 'Information');
-			$mail->isHTML(true);
-			$mail->Subject = $details['subject'];
+			$sendgrid = new \SendGrid(get_env('SENDGRID_API_KEY'));
+			$email    = new \SendGrid\Mail\Mail();
+			$email->addTo($details['to']);
+			$email->setFrom(get_env('MAIL_USERNAME'));
+			$email->setSubject($details['subject']);
 			$htmlMsg = $this->app->view->fetch($details['view_page'], $details['view_data']);
-			$mail->Body = $htmlMsg;
-			$mail->AltBody = $mail->html2text($htmlMsg);
-			return $mail->send();
+			$text=preg_replace('~[\r\n]+~', '\r\n', $htmlMsg);
+			$email->addContent('text/html', $htmlMsg);
+			$email->addContent('text/plain', $text);
+			$response = ($sendgrid->send($email));
+			if (get_env('MAIL_DEBUG', 0) > 0)
+				echo $response->body();
+			return $response->statusCode() > 200;
 		} catch (Exception $e) {
 			// echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
-			return FALSE;
+			return false;
 		}
 	}
-
 }
-?>
+ 
