@@ -18,7 +18,8 @@
         "jstayton/google-maps-geocoder": "^2.4",
         "slim/pdo": "^1.10",
         "cloudinary/cloudinary_php": "^1.13",
-        "rakit/validation": "^1.1"
+        "rakit/validation": "^1.1",
+        "sendgrid/sendgrid": "^7.2"
     },
     "autoload": {
         "psr-4": {
