@@ -51,7 +51,7 @@ class DriverAuth extends Api_Controller {
 	}
 
 	public function login() {
-		$validation = $this->validateLoginField();
+		/* $validation = $this->validateLoginField();
 		if ($validation->fails()) {
 			$response = array(
 
@@ -68,7 +68,7 @@ class DriverAuth extends Api_Controller {
 
 			);
 			return $this->response->withJson($response);
-		}
+		} */
 		$links = array(
 
 			"self" => $this->self,
