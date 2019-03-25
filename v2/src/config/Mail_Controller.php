@@ -57,8 +57,11 @@ class Mail_Controller extends Api_Controller
 			$email->addContent('text/html', $htmlMsg);
 			$email->addContent('text/plain', $text);
 			$response = ($sendgrid->send($email));
-			if (get_env('MAIL_DEBUG', 0) > 0)
-				echo $response->body();
+			if (get_env('MAIL_DEBUG', 0) > 0){
+				echo "Sendgrid status code: ".$response->statusCode();
+				echo "Sendgrid body: ".$response->body();
+			}
+				
 			return $response->statusCode() > 200;
 		} catch (Exception $e) {
 			// echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
