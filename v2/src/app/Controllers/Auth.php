@@ -47,7 +47,7 @@ class Auth extends Api_Controller
 	public function login()
 	{
 		
-		$validation = $this->validateLoginField();
+		/* $validation = $this->validateLoginField();
 		if ($validation->fails()) {
 			$response = array(
 
@@ -64,7 +64,7 @@ class Auth extends Api_Controller
 
 			);
 			return $this->response->withJson($response);
-		}
+		} */
 
 		$links = array(
 			"self" => $this->self,
@@ -159,7 +159,7 @@ class Auth extends Api_Controller
 	}
 	public function social_login()
 	{
-		$validation=$this->validateSocialLoginField();
+		/* $validation=$this->validateSocialLoginField();
 		if ($validation->fails()) {
 			$response = array(
 
@@ -176,7 +176,7 @@ class Auth extends Api_Controller
 
 			);
 			return $this->response->withJson($response);
-		}
+		} */
 		$links = array(
 			"self" => $this->self,
 			"forgot_password" => base_url($this->env['route']['user']['forgot']),
@@ -327,7 +327,7 @@ class Auth extends Api_Controller
 			"forgot_password" => base_url($this->env['route']['user']['forgot']),
 		);
 
-		$validation = $this->validateRegistration();
+		/* $validation = $this->validateRegistration();
 		if ($validation->fails()) {
 			$response = array(
 
@@ -344,7 +344,7 @@ class Auth extends Api_Controller
 
 			);
 			return $this->response->withJson($response);
-		}
+		} */
 		$email = $this->input['email'];
 		$count = Users::where('u_email', $email)->count();
 		if ($count <= 0) {
