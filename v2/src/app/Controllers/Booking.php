@@ -341,7 +341,7 @@ class Booking extends Api_Controller {
 			"to_lat"=>"required|numeric",
 			"to_long"=>"required|numeric"
 		]);
-		$validation->validate();
+		/* $validation->validate();
 		if ($validation->fails()) {
 			$booking_response = array(
 
@@ -358,7 +358,7 @@ class Booking extends Api_Controller {
 
 			);
 			return $this->response->withJson($booking_response);
-		}
+		} */
 		$time = time_now();
 
 		$date = date('Y-m-d', strtotime($time));
