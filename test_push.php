@@ -72,7 +72,7 @@ echo $response->body(); */
         }
     </style>
     <form action='' method='GET'>
-        <textarea name='code' width='500' height=500 rows=20 cols=100 value="<?= @$_GET['code'] ?>"></textarea>
+        <textarea name='code' width='500' height=500 rows=20 cols=100 ><?= @$_GET['code'] ?></textarea>
         <button type='submit'>Submit</button>
     </form>
 
