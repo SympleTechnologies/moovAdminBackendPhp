@@ -23,8 +23,10 @@ class Mail_Controller extends Api_Controller
 	public function send_mail($details = array())
 	{
 		if (get_env('MAIL_PRETEND')) {
+			echo "Pretending to sendmail";
 			return $this->pretendToSendMail($details);
 		} else {
+			echo "Actually sending mails";
 			return $this->sendMailWithMailer($details);
 		}
 	}
