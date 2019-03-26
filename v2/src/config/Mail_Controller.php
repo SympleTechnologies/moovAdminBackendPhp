@@ -58,6 +58,7 @@ class Mail_Controller extends Api_Controller
 			$email->addContent('text/plain', $text);
 			$response = ($sendgrid->send($email));
 			echo "Mail debug";
+			var_dump($sendgrid);
 			var_dump(get_env('MAIL_DEBUG', 0));
 			var_dump(get_env('MAIL_DEBUG', 0)> 0);
 			if (get_env('MAIL_DEBUG', 0) > 0){
