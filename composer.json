@@ -3,7 +3,6 @@
         "slim/slim": "^3.0",
         "monolog/monolog": "^1.23",
         "illuminate/database": "^5.4",
-        "phpmailer/phpmailer": "^6.0",
         "slim/twig-view": "^2.4",
         "nesbot/carbon": "^1.31",
         "intervention/image": "^2.4",
