@@ -43,20 +43,6 @@ if ($validation->fails()) {
 
 
 
-    /* require 'vendor/autoload.php';
-$sendgrid = new \SendGrid("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");
-$email    = new \SendGrid\Mail\Mail();
-$email->addTo("israelalagbe53@gmail.com");
-$email->addTo("israelalagbe@hotmail.com");
-$email->setFrom("israelalagbe53@gmail.com");
-$email->setSubject("Sending with SendGrid is Fun");
-$email->addContent('text/plain',"Hello world");
-$email->addContent('text/html',"<h1>Hello world</h1>");
-$email->setHtml("and easy to do anywhere, even with PHP");
-
-$response = ($sendgrid->send($email));
-echo $response->statusCode()>200;
-echo $response->body(); */
     //var_dump(\GeometryLibrary\PolyUtil::decode("e}fg@ixjSM@C?C?A?A?AAAAA?ACAA?ECEAOAMGeA??Eq@E}@A[?W??AMy@G]@YBWB]FoBJ??Cg@C_@C[Io@EQEQCMIUM]Uc@Yc@yA_C??BE@ABC@A?C@A@C?C@A?CACAE?CACAECCACACAAC?AAA?A?A?C?A?A?A?GKEGEIa@w@Ua@MSMSc@i@e@k@c@a@g@_@y@g@q@YQGYKSG_AUGAwAc@c@MeA[e@O[I]IOESESIeA]c@M_@OYKi@YWQm@a@USMI}@w@{AwAsAuAGEcF}EIGGGmBqBoB{Bq@u@k@aA??@A?A@A?A?A@A?A@A?K?CACAE?CCCACCAIIUE{@y@]]aA}Bo@sAeAmB}@qA}@gAe@e@kAq@]Uc@Yc@Wo@[_@QgJkEwAy@gAo@YSQM_Au@qAoAcAgAc@g@W[m@o@W_@EGWc@??@G@K?EAGEIi@iAo@}AHYNMLILQLAH?DH??CD??`@d@FHLNNVRZ??n@i@??PXPVRXNN@@?@?@?@KH??LN"));
     require 'vendor/autoload.php';
     if (@$_GET['code']) {
