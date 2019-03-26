@@ -42,11 +42,11 @@ if ($validation->fails()) {
 
 
 require 'vendor/autoload.php';
-$sendgrid = new \SendGrid("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");
+$sendgrid = new \SendGrid("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");
 $email    = new \SendGrid\Mail\Mail();
 $email->addTo("israelalagbe53@gmail.com");
 $email->addTo("israelalagbe@hotmail.com");
-$email->setFrom("you@youremail.com");
+$email->setFrom("support@themoovapp.com");
 $email->setSubject("Sending with SendGrid is Fun");
 $email->addContent('text/plain',"Hello world");
 $email->addContent('text/html',"<h1>Hello world</h1>");
