@@ -3,7 +3,13 @@ function time_now()
 {
     return date("Y-m-d H:i:s");
 }
-
+/**
+ * Helper function to convert value to boolean, 
+ * it converts truthy values to boolean
+ */
+function toBoolean($value){
+    return (boolean)json_decode(strtolower($value));
+}
 
 function converToTz($time = "", $toTz = '', $fromTz = 'UTC')
 {
