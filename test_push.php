@@ -46,7 +46,7 @@ $sendgrid = new \SendGrid("REDACTED");
 $email    = new \SendGrid\Mail\Mail();
 $email->addTo("israelalagbe53@gmail.com");
 $email->addTo("israelalagbe@hotmail.com");
-$email->setFrom("you@youremail.com");
+$email->setFrom("support@themoovapp.com");
 $email->setSubject("Sending with SendGrid is Fun");
 $email->addContent('text/plain',"Hello world");
 $email->addContent('text/html',"<h1>Hello world</h1>");
