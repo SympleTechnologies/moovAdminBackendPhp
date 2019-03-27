@@ -448,8 +448,6 @@ class DriverAuth extends Api_Controller {
 
 		$useremail = $this->input['email'];
 
-		echo $useremail;
-
 		$userdata = array(
 
 			'u_email' => $this->input['email'],
