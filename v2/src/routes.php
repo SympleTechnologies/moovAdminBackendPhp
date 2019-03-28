@@ -127,6 +127,7 @@ $env['route'] = array(
 	),
 
 	"global" => array(
+		"get_available_drivers" => '/schools/{school_id}/available_drivers',
 
 		"start_transaction" => '/wallet/init_payment',
 
@@ -204,7 +205,6 @@ $app->get($r_user['select_type'], 'Auth:get_usertype_list');
 $app->post($r_user['ride_add_rating'], 'Ride:add_rating');
 
 
-
 $app->get($r_user['view_user_details'], 'User:user_details');
 
 $app->get($r_user['view_rides'], 'Ride:user_view_previous_rides');
@@ -261,6 +261,7 @@ $app->get($r_driver['view_active_trip'], 'Ride:rider_view_current_trip');
 $app->get($r_driver['ride_start'], 'Ride:start_ride');
 
 //global
+$app->get($r_global['get_available_drivers'], 'Ride:getAvailableDrivers');
 $app->post($r_global['init_external_payment'], 'Wallet:initExternalPayment');
 $app->post($r_global['start_transaction'], 'Wallet:start_transaction');
 
