@@ -1,5 +1,9 @@
 <?php
 
+use src\app\Helpers\DbLoggerHandler;
+if (!toBoolean(get_env('DEBUG'))) {
+	error_reporting(0);
+}
 $container = $app->getContainer();
 
 
@@ -30,7 +34,9 @@ $container['logger'] = function ($c) {
 	$logger = new \Monolog\Logger('moov_logger_v1');
 	$file_handler = new \Monolog\Handler\StreamHandler('../logs/' . date('Y/m/d-m-Y') . '.html');
 	$file_handler->setFormatter(new Monolog\Formatter\HtmlFormatter());
+	$dbHander=new DbLoggerHandler();
 	$logger->pushHandler($file_handler);
+	$logger->pushHandler($dbHander);
 	return $logger;
 };
 
@@ -56,7 +62,20 @@ $container['notAllowedHandler'] = function ($c) {
 		return $c['response']->withStatus(405)->withHeader('Content-Type', 'application/json')->withJson($data);
 	};
 };
-
+$container['phpErrorHandler'] = $container['errorHandler'] = function ($container) {
+	return function ($request, $response, $exception) use ($container) {
+		$container['logger']->error($exception);
+		if (!toBoolean(get_env('DEBUG'))) {
+			return $response->withStatus(500)
+				->withHeader('Content-Type', 'text/html')
+				->write('Something went wrong!');
+		} else { 
+			return $response->withStatus(500)
+				->withHeader('Content-Type', 'text/html')
+				->write("<pre>$exception</pre>");
+		}
+	};
+};
 $container["jwt"] = function ($container) {
 	return new StdClass;
 };
