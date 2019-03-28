@@ -3,7 +3,11 @@
 namespace src\config;
 
 class Api_Controller {
-	public $app, $db, $request, $response, $logger, $env;
+	public $app, $db, $request, $response, $env;
+	/**
+	 * @var \Monolog\Logger $logger
+	 */
+	public $logger;
 
 	public function __construct() {
 		global $app;

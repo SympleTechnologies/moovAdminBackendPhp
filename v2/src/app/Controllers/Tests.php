@@ -42,6 +42,12 @@ class Tests extends Api_Controller
     public function test()
 
     {
+
+        /* $this->logger->info('test.php',[
+            'a'=>2,
+            'b'=>2
+        ]); */
+        me();
         die();
         \set_time_limit(0);
         $jsonFile = file_get_contents('http://localhost/moov/api/image_data.json');
