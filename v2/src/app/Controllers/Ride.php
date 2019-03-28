@@ -24,7 +24,21 @@ class Ride extends Api_Controller
 		$filename = basename($file) . PHP_EOL;
 		return preg_match('/^([-\.\w]+)$/', $filename) > 0;
 	}
+	public function getAvailableDrivers($request, $response, $args){
+		$schoolId=$args['school_id'];
+		$query=DriverDetails::query();
+		$query->join('users', function ($join) {
+			
+			$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
+		});
 
+		$drivers=$query
+			->where("users.u_edu_institution",$schoolId)
+			->whereIn('dd_curent_status', ['online', 'ontrip', 'onride'])
+			->select('driver_details.*')
+			->get();
+		return $this->response->withJson($drivers);
+	}
 	public function driver_shift()
 	{
 

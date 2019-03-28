@@ -204,7 +204,7 @@ class Booking extends Api_Controller {
 
 	}
 
-	public static function getClosestCars($lat, $lng, $city, $distance = 20, $limit = 20,$schoolID) {
+	public function getClosestCars($lat, $lng, $city, $distance = 20, $limit = 20,$schoolId) {
 
 		$time = time_now();
 
@@ -212,24 +212,25 @@ class Booking extends Api_Controller {
 
 		$ctime = date('H:i:s', strtotime($time));
 
+		$timeOutToOffline=5;  //minutes before driver is automatically marked as offline
+
 		$coordinates = ['latitude' => $lat, 'longitude' => $lng];
 	
 		
 		$where = array(
 
-			"dd_status_date" => $date,
-			"users.u_edu_institution"=>$schoolID
+			//"dd_status_date" => $date,
+			"users.u_edu_institution"=>$schoolId
 
 		);
-
+		$timestamp = date('Y-m-d H:i:s', strtotime($time));
 		$cares = self::scopeIsWithinMaxDistance(DriverDetails::query(), $coordinates, $distance)
-
 			->where($where)
-
 			->whereIn('dd_curent_status', ['online', 'ontrip', 'onride'])
-
+			->whereRaw("TIMESTAMP(CONCAT(`dd_status_date`,' ',`dd_status_time`)) BETWEEN  (DATE_SUB(\"$timestamp\",INTERVAL 5 MINUTE)) AND \"$timestamp\"")
 			->limit($limit)->get('id');
 		if($cares){
+			/* $this->logger->info('getClosestCars',$cares->toArray()); */
 			return $cares->toArray();
 		}
 		return null;
