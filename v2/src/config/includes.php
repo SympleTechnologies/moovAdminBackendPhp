@@ -15,7 +15,7 @@ require $source;
 });
  */
 
-/* spl_autoload_register(function ($className) {
+spl_autoload_register(function ($className) {
     $className = ltrim($className, '\\');
     $fileName  = '';
     $namespace = '';
@@ -25,9 +25,11 @@ require $source;
         $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
     }
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-
-    require $fileName;
-}); */
+    
+   if(file_exists( $fileName)){
+        require $fileName;
+   };
+});
 
 
 //Models

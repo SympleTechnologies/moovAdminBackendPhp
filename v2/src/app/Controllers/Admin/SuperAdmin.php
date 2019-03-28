@@ -47,6 +47,7 @@ class SuperAdmin extends BaseAdmin {
 	}
 
 	public function addPriceShare($req, $res) {
+		\set_time_limit(0);
 		if (!$this->validateToken($req, $res) && !$this->isSuperAdmin()) {
 			return $this->invalidSession($res);
 		}
@@ -77,6 +78,7 @@ class SuperAdmin extends BaseAdmin {
 	}
 
 	public function updatePriceShare($req, $res, $args) {
+		\set_time_limit(0);
 		if (!$this->validateToken($req, $res) && !$this->isSuperAdmin()) {
 			return $this->invalidSession($res);
 		}
