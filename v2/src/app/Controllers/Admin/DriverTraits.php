@@ -1,21 +1,19 @@
 <?php
 namespace src\app\Controllers\Admin;
+
 use src\app\Models\DriverDetails;
 use src\app\Models\User;
 
-trait DriverTraits {
-	public function searchDrivers($req, $res, $args = null) {
+trait DriverTraits
+{
+	public function searchDrivers($req, $res, $args)
+	{
 		if (!$this->validateToken($req, $res) || (!$this->isSuperAdmin() && !$this->isAdmin() && !$this->isSchool())) {
 			return $this->invalidSession($res);
 		}
-
-		if (!\is_null($args)) {
-			$page = (!isset($args['page']) || is_null($args['page']) || $args['page'] == 0) ? 1 : $args['page'];
-			$limit = (!isset($args['limit']) || is_null($args['limit']) || $args['limit'] == 0) ? 20 : $args['limit'];
-		} else {
-			$page = 1;
-			$limit = 20;
-		}
+		$args['page']=$req->getQueryParam('search');
+		$page = $req->getQueryParam('page')>=1?$req->getQueryParam('page'):1;
+		$limit = \is_int($req->getQueryParam('limit'))?$req->getQueryParam('limit'):20;
 		$skip = ($page - 1) * $limit;
 
 		$query = DriverDetails::query();
@@ -30,17 +28,24 @@ trait DriverTraits {
 			});
 		}
 		if (!\is_null($req->getQueryParam('school')) && $this->isSuperAdmin()) {
-			$query->where(function ($q) use ($req) {$q->where('users.u_edu_institution', $req->getQueryParam('school'));});
+			$query->where(function ($q) use ($req) {
+				$q->where('users.u_edu_institution', $req->getQueryParam('school'));
+			});
 		}
 
-		// if admin restrict to admins school
+		// if an admin or school is logged in here
 		if ($this->isAdmin() || $this->isSchool()) {
 			$sid = $this->user->u_edu_institution;
-			$query->where(function ($q) use ($sid) {$q->where('users.u_edu_institution', $sid);});
+			$query->where(function ($q) use ($sid) {
+				$q->where('users.u_edu_institution', $sid);
+			});
 		}
 
 		$total = $query->count();
-		$query->skip($skip)->take($limit);
+		$query
+			->skip($skip)
+			->take($limit)
+			->orderBy('dc_id', 'desc');
 
 		$drivers = $query->get();
 
@@ -56,27 +61,34 @@ trait DriverTraits {
 
 			$driverResult[] = $d;
 		}
-
+		$totalPages = $total % $limit == 0 ? floor($total / $limit) : floor($total / $limit) + 1;
 		$res->getBody()->write(json_encode([
 			'status' => 200,
 			'drivers' => $driverResult,
 			'total' => $total,
+			'totalPages' => $totalPages,
+			'page' => $page,
+			'limit' => $limit,
 		]));
 	}
 
-	public function getDriver($req, $res, $args = null) {
+	public function getDriver($req, $res, $args = null)
+	{
 		throw new \Exception("Action not yet implemented");
 	}
 
-	public function addDriver($req, $res, $args = null) {
+	public function addDriver($req, $res, $args = null)
+	{
 		throw new \Exception("Action not yet implemented");
 	}
 
-	public function updateDriverDetails($req, $res, $args = null) {
+	public function updateDriverDetails($req, $res, $args = null)
+	{
 		throw new \Exception("Action not yet implemented");
 	}
 
-	public function activateDriver($req, $res, $args = null) {
+	public function activateDriver($req, $res, $args = null)
+	{
 		if (!$this->validateToken($req, $res) || (!$this->isSuperAdmin() && !$this->isAdmin())) {
 			return $this->invalidSession($res);
 		}
@@ -101,7 +113,8 @@ trait DriverTraits {
 		return $res->getBody()->write(json_encode(['status' => 200, 'message' => 'Driver has been activated for taking rides']));
 	}
 
-	public function deactivateDriver($req, $res, $args = null) {
+	public function deactivateDriver($req, $res, $args = null)
+	{
 		if (!$this->validateToken($req, $res) || (!$this->isSuperAdmin() && !$this->isAdmin())) {
 			return $this->invalidSession($res);
 		}
@@ -126,9 +139,9 @@ trait DriverTraits {
 		return $res->getBody()->write(json_encode(['status' => 200, 'message' => 'Driver has been deactivated from taking rides']));
 	}
 
-	public function deleteDriver() {
+	public function deleteDriver()
+	{
 		throw new \Exception("Action not yet implemented");
 	}
 }
-
-?>
+ 
