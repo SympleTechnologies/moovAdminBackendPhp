@@ -213,6 +213,17 @@ trait AdminTraits {
 		$limit = (\is_null($args['limit']) || $args['limit'] == 0) ? 20 : $args['limit'];
 		$skip = ($page - 1) * $limit;
 		$query = User::where('u_edu_institution', $schoolid);
+
+		if (!empty($req->getQueryParam('active'))) {
+			$query->where('u_status', 'ACTIVE');
+		}
+		if (!empty($req->getQueryParam('suspended'))) {
+			$query->where('u_status', 'SUSPENDED');
+		}
+		if (!empty($req->getQueryParam('deactivated'))) {
+			$query->where('u_status', 'DEACTIVATED');
+		}
+		
 		if (!empty($req->getQueryParam('keyword'))) {
 			$keyword = $req->getQueryParam('keyword');
 			$query->where(function ($query) use ($keyword) {
@@ -223,7 +234,6 @@ trait AdminTraits {
 		}
 		$total = $query->count();
 		$users = $query->orderBy('u_id', 'desc')->skip($skip)->take($limit)->get();
-		$query = User::where('u_edu_institution', $schoolid);
 		$userResult = array();
 		foreach ($users as $user) {
 			$us = array(
@@ -273,7 +283,9 @@ trait AdminTraits {
 		}
 		$drivers_cursor = $query->join('driver_details', 'users.u_id', '=', 'driver_details.dd_driver_id')
 			->where('u_edu_institution', $schoolid)
-			->skip($skip)->take($limit);
+			->skip($skip)
+			->take($limit)
+			->orderBy('dc_id', 'desc');
 
 		$total = $drivers_cursor->count();
 		$drivers = $drivers_cursor->get();
