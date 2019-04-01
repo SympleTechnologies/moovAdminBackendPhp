@@ -49,16 +49,17 @@ class Ride extends Api_Controller
 			
 			$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
 		}); */
+		
 
-		$driver = DriverDetails::where('driver_details.dd_driver_id', $userId)
+		$driver = DriverDetails::with('user','bank_detail')->where('driver_details.dd_driver_id', $userId)
 			/* ->join('users', function ($join) {
 				$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
 			}) */
 			//->select('driver_details.*','users.*')
 			->first();
 		$result=$driver->toArray();
-		$result['user']=Users::where('u_id',$driver->dd_driver_id)/* ->exclude('password','u_push_token','u_token','u_image_100','u_image_200','u_push_token','u_temp_pass','u_last_otp') *//* ->select('u_first_name','u_last_name','u_email','u_edu_institution','u_image') */->first();
-		$result['bank_detail']=BankDetails::where('bd_user_id',$driver->dd_driver_id)->first();
+		// $result['user']=Users::where('u_id',$driver->dd_driver_id)/* ->exclude('password','u_push_token','u_token','u_image_100','u_image_200','u_push_token','u_temp_pass','u_last_otp') *//* ->select('u_first_name','u_last_name','u_email','u_edu_institution','u_image') */->first();
+		// $result['bank_detail']=BankDetails::where('bd_user_id',$driver->dd_driver_id)->first();
 		/* $result = [
 			"driver_id" => $users->u_id,
 
