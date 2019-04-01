@@ -122,6 +122,106 @@ trait AdminTraits {
 		}
 
 	}
+	public function editUser($req, $res) {
+
+		if (!$this->validateToken($req, $res) || (!$this->isSuperAdmin() && !$this->isAdmin())) {
+			return $this->invalidSession($res);
+		}
+
+		$v = $this->validateRequired(['firstname', 'lastname', 'email', 'role', 'password'], $this->input);
+		if ($v != true) {
+			$str = \json_encode([
+				'status' => 403, 'message' => $v,
+			]);
+
+			return $res->getBody()->write($str);
+		}
+
+		switch ($this->input['role']) {
+		case 'SUPERADMIN':
+			$this->input['role'] = self::SUPERADMIN;
+			break;
+		case 'ADMIN':
+			$this->input['role'] = self::ADMIN;
+			break;
+		case 'SCHOOL':
+			$this->input['role'] = self::SCHOOL;
+			break;
+		case 'DRIVER':
+			$this->input['role'] = self::DRIVER;
+			break;
+		case 'USER':
+			$this->input['role'] = self::USER;
+			break;
+		case 'TESTER':
+			$this->input['role'] = self::TESTER;
+			break;
+		}
+
+		if ($this->input['role'] == self::ADMIN || $this->input['role'] == self::USER || $this->input['role'] == self::DRIVER || $this->input['role'] == self::TESTER) {
+			if (empty($this->input['school'])) {return $res->getBody()->write(json_encode(['status' => 400, 'message' => 'You need to provide a school for this role type']));}
+		}
+
+		// verify role I'm assigning to user, it can't be equal to mine except for super admin
+		if ((int) $this->input['role'] >= $this->user->u_role && $this->user->u_role != self::SUPERADMIN) {
+			return $res->getBody()->write(json_encode(['status' => 400, 'message' => 'Error. You cannot create a user with this role']));
+		}
+		/* if (User::where('u_email', $this->input['email'])->count() > 0) {
+			return $res->getBody()->write(json_encode(['status' => 400, 'message' => 'Email already exists!']));
+		}; */
+
+		try {
+			$this->beginTransaction();
+			$user = User::find($this->input['user_id']);
+			$user->u_first_name = $this->input['firstname'];
+			$user->u_last_name = $this->input['lastname'];
+			$user->u_email = $this->input['email'];
+			$user->u_phone_country = $this->input['phone_country'];
+			$user->u_phone = $this->input['phone_number'];
+			$user->u_gender = $this->input['gender'];
+			$user->u_role = (int) $this->input['role'];
+			if(@$this->input['password'])
+				$user->u_password = $this->input['password'];
+			if ($this->input['role'] === self::DRIVER) {
+				$user->u_type = 4;
+			}
+			if (!empty($this->input['school'])) {
+				$user->u_edu_institution = $this->input['school'];
+			}
+			$user->save();
+
+			if ($this->input['role'] === self::DRIVER) {
+				// also add driver to driver details
+				$dd = DriverDetails::where('dd_driver_id',$user->u_id)->first();
+				$dd->car_colour = $this->input['car_colour'];
+				$dd->dd_birth_day = $this->input['dob'];
+				$dd->dd_expiery_date = $this->input['expiry_date'];
+				$dd->dd_license = $this->input['licence_number'];
+				$dd->dd_car_number = $this->input['plate_number'];
+				$dd->dd_car_model_id = $this->input['car_model'];
+				$dd->dd_car_capacity = $this->input['car_capacity'];
+				$dd->save();
+
+				$bd = BankDetails::where('bd_user_id',$user->u_id)->first();
+				$bd->bd_bank_code = $this->input['bank_code'];
+				$bd->bd_bank_name = $this->input['bank_name'];
+				$bd->bd_account_number = $this->input['account_number'];
+				$bd->bd_account_name = $this->input['account_name'];
+				$bd->save();
+
+			}
+			$this->commitTransaction();
+			$res->getBody()->write(json_encode([
+				'status' => 200, 'message' => 'User Has been edited',
+			]));
+		} catch (\Exception $e) {
+			$res->getBody()->write(json_encode([
+				'status' => 400, 'message' => "There was a problem editing user. Please ensure email doesn't already exist.",
+				'debug' => $e->getMessage(),
+			]));
+		}
+
+	}
 
 	public function allUsers($req, $res, $args) {
 		if (!$this->validateToken($req, $res) || (!$this->isSuperAdmin() && !$this->isAdmin() && !$this->isSchool())) {
@@ -194,7 +294,7 @@ trait AdminTraits {
 			'limit' => $limit,
 			'total' => $total,
 			'totalPages' => $totalPages,
-			'query' => $query->toSql(),
+			//'query' => $query->toSql(),
 		]));
 
 	}
