@@ -34,38 +34,41 @@ spl_autoload_register(function ($className) {
 
 //Models
 
-require 'src/app/Models/User.php';
-require 'src/app/Models/SupportMessage.php';
-require 'src/app/Models/UserLoginLog.php';
+// require 'src/app/Models/User.php';
+// require 'src/app/Models/SupportMessage.php';
+// require 'src/app/Models/UserLoginLog.php';
 
-require 'src/app/Models/Wallet.php';
+// require 'src/app/Models/Wallet.php';
 
 //require 'src/app/Models/DriverDetails.php';
 
-require 'src/app/Models/Rides.php';
+// require 'src/app/Models/Rides.php';
 
-require 'src/app/Models/Trips.php';
+// require 'src/app/Models/Trips.php';
 
-require 'src/app/Models/Bank_details.php';
+// require 'src/app/Models/Bank_details.php';
 
-require 'src/app/Models/UserType.php';
-require 'src/app/Models/CarModel.php';
-require 'src/app/Models/School.php';
+// require 'src/app/Models/UserType.php';
+// require 'src/app/Models/CarModel.php';
+// require 'src/app/Models/School.php';
 
-require 'src/app/Models/PriceShare.php';
+// require 'src/app/Models/PriceShare.php';
 
-require 'src/app/Models/SchoolWallet.php';
+// require 'src/app/Models/SchoolWallet.php';
 
-require 'src/app/Models/MoovWallet.php';
-require 'src/app/Models/Transaction.php';
+// require 'src/app/Models/MoovWallet.php';
+// require 'src/app/Models/Transaction.php';
 
 //Helpers
 
-require 'src/app/Helpers/HWallet.php';
+//require 'src/app/Helpers/HWallet.php';
 
-require 'src/app/Helpers/Helper.php';
-require 'src/app/Helpers/FileUpload.php';
-require 'src/app/Helpers/RecordExistsValidatorRule.php';
+//require 'src/app/Helpers/Helper.php';
+//require 'src/app/Helpers/FileUpload.php';
+//require 'src/app/Helpers/RecordExistsValidatorRule.php';
+
+
+
 //Controllers
 
 require 'src/config/Api_Controller.php';
@@ -76,21 +79,21 @@ require 'src/config/Connection.php';
 
 //user Controllers
 
-require 'src/app/Controllers/User.php';
+/* require 'src/app/Controllers/User.php';
 
 require 'src/app/Controllers/Auth.php';
 
 require 'src/app/Controllers/DriverAuth.php';
 
 require 'src/app/Controllers/Booking.php';
-require 'src/app/Controllers/FutureBooking.php';
+require 'src/app/Controllers/FutureBooking.php'; */
 require 'src/app/Controllers/cronbooking.php';
 
-require 'src/app/Controllers/Wallet.php';
+//require 'src/app/Controllers/Wallet.php';
 
 //require 'src/app/Controllers/Ride.php';
 
-require 'src/app/Controllers/Email.php';
+/* require 'src/app/Controllers/Email.php';
 
 require 'src/app/Controllers/Tests.php';
 require 'src/app/Controllers/Otp.php';
@@ -107,7 +110,7 @@ require 'src/app/Controllers/Admin/Roles.php';
 require 'src/app/Controllers/Admin/BaseAdmin.php';
 require 'src/app/Controllers/Admin/Admin.php';
 require 'src/app/Controllers/Admin/SuperAdmin.php';
-require 'src/app/Controllers/Admin/School.php';
+require 'src/app/Controllers/Admin/School.php'; */
 
 //spl_autoload will trigger error
 
