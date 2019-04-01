@@ -40,7 +40,7 @@ require 'src/app/Models/UserLoginLog.php';
 
 require 'src/app/Models/Wallet.php';
 
-require 'src/app/Models/DriverDetails.php';
+//require 'src/app/Models/DriverDetails.php';
 
 require 'src/app/Models/Rides.php';
 
@@ -88,7 +88,7 @@ require 'src/app/Controllers/cronbooking.php';
 
 require 'src/app/Controllers/Wallet.php';
 
-require 'src/app/Controllers/Ride.php';
+//require 'src/app/Controllers/Ride.php';
 
 require 'src/app/Controllers/Email.php';
 
