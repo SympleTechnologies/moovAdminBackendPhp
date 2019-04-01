@@ -123,7 +123,7 @@ $env['route'] = array(
 		"view_active_trip" => '/rides/driver/active/{id}',
 
 		"ride_start" => '/rides/start/{id}/{lat}/{long}',
-
+		"get_drivers_by_user" => '/users/{user_id}/driver',
 	),
 
 	"global" => array(
@@ -259,6 +259,8 @@ $app->get($r_driver['ride_stop'], 'Ride:stop_ride');
 $app->get($r_driver['view_active_trip'], 'Ride:rider_view_current_trip');
 
 $app->get($r_driver['ride_start'], 'Ride:start_ride');
+
+$app->get($r_driver['get_drivers_by_user'], 'Ride:getDriver');
 
 //global
 $app->get($r_global['get_available_drivers'], 'Ride:getAvailableDrivers');

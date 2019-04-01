@@ -13,6 +13,7 @@ use src\app\models\Wallet;
 use src\config\Api_Controller;
 use Rakit\Validation\Validator;
 use src\config\Mail_Controller;
+use src\app\Models\BankDetails;
 
 class Ride extends Api_Controller
 {
@@ -24,20 +25,80 @@ class Ride extends Api_Controller
 		$filename = basename($file) . PHP_EOL;
 		return preg_match('/^([-\.\w]+)$/', $filename) > 0;
 	}
-	public function getAvailableDrivers($request, $response, $args){
-		$schoolId=$args['school_id'];
-		$query=DriverDetails::query();
+	public function getAvailableDrivers($request, $response, $args)
+	{
+		$schoolId = $args['school_id'];
+		$query = DriverDetails::query();
 		$query->join('users', function ($join) {
-			
+
 			$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
 		});
 
-		$drivers=$query
-			->where("users.u_edu_institution",$schoolId)
+		$drivers = $query
+			->where("users.u_edu_institution", $schoolId)
 			->whereIn('dd_curent_status', ['online', 'ontrip', 'onride'])
 			->select('driver_details.*')
 			->get();
 		return $this->response->withJson($drivers);
+	}
+	public function getDriver($request, $response, $args)
+	{
+		$userId = $args['user_id'];
+
+		/* $query->join('users', function ($join) {
+			
+			$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
+		}); */
+		
+
+		$driver = DriverDetails::with('user','bank_detail')->where('driver_details.dd_driver_id', $userId)
+			/* ->join('users', function ($join) {
+				$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
+			}) */
+			//->select('driver_details.*','users.*')
+			->first();
+		$result=$driver->toArray();
+		// $result['user']=Users::where('u_id',$driver->dd_driver_id)/* ->exclude('password','u_push_token','u_token','u_image_100','u_image_200','u_push_token','u_temp_pass','u_last_otp') *//* ->select('u_first_name','u_last_name','u_email','u_edu_institution','u_image') */->first();
+		// $result['bank_detail']=BankDetails::where('bd_user_id',$driver->dd_driver_id)->first();
+		/* $result = [
+			"driver_id" => $users->u_id,
+
+			"first_name" => $users->u_first_name,
+
+			"last_name" => $users->u_last_name,
+
+			"email" => $users->u_email,
+
+			"institution_id" => $users->u_edu_institution,
+
+			"institution_name" => $users->ei_name,
+
+			"phone" => $users->u_phone,
+
+			"phone_country" => $users->u_phone_country,
+
+			"gender" => $users->u_gender,
+
+			"vehicle_no" => $users->dd_car_number,
+
+			"verified" => $users->dd_admin_approved,
+
+			"u_device_id" => $users->u_device_id,
+
+			"car_capacity" => $users->dd_car_capacity,
+
+			"license_no" => $users->dd_license,
+
+			"license_expiry" => $users->dd_expiery_date,
+
+			"dob" => $users->dd_birth_day,
+
+			"wallet_balance" => $users->w_amount,
+
+			"image" => $users->u_image,
+			//Car details
+		]; */
+		return $this->response->withJson($result);
 	}
 	public function driver_shift()
 	{
@@ -1052,13 +1113,13 @@ $dd->save();*/
 
 		$user_details = Users::find($ride->cr_user_id);
 		$mailer = new Mail_Controller();
-		
+
 		$driverloc = $this->driver_location($trip->ct_driver_id);
 		$drive_details = $this->GetDrivingDistance($ride->cr_start_lat, $driverloc->dd_current_lat, $ride->cr_start_long, $driverloc->dd_current_long);
-		$pickUpAddress=$trip->ct_trip_start_from;
-		$pickupTitle=explode(',',$pickUpAddress)[0];
-		$destinationAddress=$trip->ct_trip_start_to;
-		$destinationTitle=explode(',',$destinationAddress)[0];
+		$pickUpAddress = $trip->ct_trip_start_from;
+		$pickupTitle = explode(',', $pickUpAddress)[0];
+		$destinationAddress = $trip->ct_trip_start_to;
+		$destinationTitle = explode(',', $destinationAddress)[0];
 		$maildata = [
 			"to" => $user_details->u_email,
 			'subject' => "Moov ride receipt",
@@ -1069,17 +1130,17 @@ $dd->save();*/
 				],
 				'driver' => [
 					'display_name' => $driver_details['first_name'] . " " . $driver_details['last_name'],
-					'profile_picture'=>$driver_details['image'],
-					'car_plate_number'=>$driver_details['vehicle_no']
+					'profile_picture' => $driver_details['image'],
+					'car_plate_number' => $driver_details['vehicle_no']
 				],
 				'trip' => [
-					'amount'=>$trip->ct_amount,
-					'pickup_title'=>$pickupTitle,
-					'pickup_description'=>$pickUpAddress,
-					'destination_title'=>$destinationTitle,
-					'destination_description'=>$destinationAddress,
-					'distance'=>@$drive_details['distance']?$drive_details['distance']:"1 M",
-					'time'=>@$drive_details['time']?$drive_details['time']:"1 M",
+					'amount' => $trip->ct_amount,
+					'pickup_title' => $pickupTitle,
+					'pickup_description' => $pickUpAddress,
+					'destination_title' => $destinationTitle,
+					'destination_description' => $destinationAddress,
+					'distance' => @$drive_details['distance'] ? $drive_details['distance'] : "1 M",
+					'time' => @$drive_details['time'] ? $drive_details['time'] : "1 M",
 				]
 
 			]

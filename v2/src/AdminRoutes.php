@@ -3,6 +3,8 @@ $app->post('/admin', function ($req, $res) {(new src\app\Controllers\Admin\Super
 
 $app->post('/admin/user', function ($req, $res) {(new src\app\Controllers\Admin\SuperAdmin())->createUser($req, $res);});
 
+$app->put('/admin/user', function ($req, $res) {(new src\app\Controllers\Admin\SuperAdmin())->editUser($req, $res);});
+
 $app->get('/admin/users[/{page}[/{limit}]]', function ($req, $res, $args) {(new src\app\Controllers\Admin\SuperAdmin())->allUsers($req, $res, $args);});
 
 $app->get('/admin/school/users/{id}[/{page}[/{limit}]]', function ($req, $res, $args) {(new src\app\Controllers\Admin\SuperAdmin())->usersPerSchool($req, $res, $args);});
