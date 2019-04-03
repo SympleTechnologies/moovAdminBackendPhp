@@ -53,7 +53,7 @@ class Mail_Controller extends Api_Controller
 			$mailer = new \Swift_Mailer($transport);
 
 			$htmlMsg = $this->app->view->fetch($details['view_page'], $details['view_data']);
-			$text=preg_replace('~[\r\n]+~', '\r\n', $htmlMsg);
+			$text=preg_replace('~[\r\n]+~', '\r\n', strip_tags($htmlMsg));
 			// Create a message
 			$message = (new \Swift_Message($details['subject']))
 				->setFrom([get_env('MAIL_FROM') => 'MOOV ADMIN'])
