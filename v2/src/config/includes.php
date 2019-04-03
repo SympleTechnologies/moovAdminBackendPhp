@@ -15,6 +15,19 @@ require $source;
 });
  */
 
+
+/**
+ * Fix differences between windows and linux path and return true if the path exists. As linus path is case sensitive.
+ */
+function realPathExist($path) {
+    $path = str_replace("\\", "/", $path);
+    $real = realpath($path);
+    $pathlen = strlen($path);
+    $correctCasePath = substr($real, strlen($real) - $pathlen);
+    $correctCasePath = str_replace("\\", "/", $correctCasePath);
+    return $correctCasePath == $path;
+}
+
 spl_autoload_register(function ($className) {
     $className = ltrim($className, '\\');
     $fileName  = '';
@@ -26,7 +39,7 @@ spl_autoload_register(function ($className) {
     }
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
     
-   if(file_exists( $fileName)){
+   if(realPathExist( $fileName)){
         require $fileName;
    };
 });

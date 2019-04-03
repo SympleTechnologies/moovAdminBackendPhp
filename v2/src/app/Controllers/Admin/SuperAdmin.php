@@ -114,6 +114,7 @@ class SuperAdmin extends BaseAdmin {
 			'subject' => "Moov price sharing percentage changes",
 			'view_page' => 'emails/price_share_amount.html',
 			'view_data' => array(
+				'recipient_name'=>$school->ei_name,
 				'school' => $school,
 				'priceshare' => $priceshare,
 			),
