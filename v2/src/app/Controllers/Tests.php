@@ -9,7 +9,7 @@ namespace src\app\Controllers;
 use src\config\Api_Controller;
 
 use src\app\Models\CarModel;
-
+use src\app\Models\SchoolWallet;
 class Tests extends Api_Controller
 
 {
@@ -42,12 +42,12 @@ class Tests extends Api_Controller
     public function test()
 
     {
+        SchoolWallet::find();
 
         /* $this->logger->info('test.php',[
             'a'=>2,
             'b'=>2
         ]); */
-        me();
         die();
         \set_time_limit(0);
         $jsonFile = file_get_contents('http://localhost/moov/api/image_data.json');
