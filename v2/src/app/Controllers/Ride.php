@@ -41,6 +41,22 @@ class Ride extends Api_Controller
 			->get();
 		return $this->response->withJson($drivers);
 	}
+	public function getAllDrivers($request, $response, $args)
+	{
+		$schoolId = $args['school_id'];
+		$query = DriverDetails::with('user');
+		$query->join('users', function ($join) {
+
+			$join->on('driver_details.dd_driver_id', '=', 'users.u_id');
+		});
+
+		$drivers = $query
+			->where("users.u_edu_institution", $schoolId)
+			//->whereIn('dd_curent_status', ['online', 'ontrip', 'onride'])
+			->select('driver_details.*')
+			->get();
+		return $this->response->withJson($drivers);
+	}
 	public function getDriver($request, $response, $args)
 	{
 		$userId = $args['user_id'];
@@ -57,7 +73,7 @@ class Ride extends Api_Controller
 			}) */
 			//->select('driver_details.*','users.*')
 			->first();
-		$result=$driver->toArray();
+		$result=$driver?$driver->toArray():null;
 		// $result['user']=Users::where('u_id',$driver->dd_driver_id)/* ->exclude('password','u_push_token','u_token','u_image_100','u_image_200','u_push_token','u_temp_pass','u_last_otp') *//* ->select('u_first_name','u_last_name','u_email','u_edu_institution','u_image') */->first();
 		// $result['bank_detail']=BankDetails::where('bd_user_id',$driver->dd_driver_id)->first();
 		/* $result = [

@@ -129,6 +129,8 @@ $env['route'] = array(
 	"global" => array(
 		"get_available_drivers" => '/schools/{school_id}/available_drivers',
 
+		"get_all_drivers" => '/schools/{school_id}/drivers',
+
 		"start_transaction" => '/wallet/init_payment',
 
 		"get_transaction_callback" => '/wallet/payment_success',
@@ -264,6 +266,7 @@ $app->get($r_driver['get_drivers_by_user'], 'Ride:getDriver');
 
 //global
 $app->get($r_global['get_available_drivers'], 'Ride:getAvailableDrivers');
+$app->get($r_global['get_all_drivers'], 'Ride:getAllDrivers');
 $app->post($r_global['init_external_payment'], 'Wallet:initExternalPayment');
 $app->post($r_global['start_transaction'], 'Wallet:start_transaction');
 
