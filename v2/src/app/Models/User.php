@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model {
 	protected $_table = 'users';
 	protected $_fillable = ['u_phone', 'u_email', 'u_password'];
-	protected $hidden = ['password','u_push_token','u_image_100','u_image_200','u_push_token','u_device_id','u_temp_pass','u_token'];
+	protected $hidden = ['u_password','u_push_token','u_image_100','u_image_200','u_push_token','u_device_id','u_temp_pass','u_token'];
 	protected $primaryKey = 'u_id';
 	// public $incrementing = false;
 
