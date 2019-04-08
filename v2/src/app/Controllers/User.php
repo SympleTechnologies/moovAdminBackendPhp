@@ -825,7 +825,7 @@ class User extends Api_Controller
 			'phone' => "required|numeric",
 			'phone_country' => 'required|regex:/^\+\d+?$/'
 		]);
-		/* $validation->validate();
+		$validation->validate();
 		if ($validation->fails()) {
 			$result = array(
 
@@ -839,7 +839,7 @@ class User extends Api_Controller
 
 			);
 			return $this->response->withJson($result);
-		} */
+		}
 
 
 		$userid = $this->input['userid'];
@@ -995,7 +995,7 @@ class User extends Api_Controller
 			'phone_country' => 'required|regex:/^\+\d+?$/',
 			//'otp' => 'required'
 		]);
-		/* $validation->validate();
+		$validation->validate();
 		if ($validation->fails()) {
 			$result = array(
 
@@ -1009,7 +1009,7 @@ class User extends Api_Controller
 
 			);
 			return $this->response->withJson($result);
-		} */
+		}
 
 		$userid = $this->input['userid'];
 
