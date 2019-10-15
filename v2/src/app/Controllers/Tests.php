@@ -10,6 +10,7 @@ use src\config\Api_Controller;
 
 use src\app\Models\CarModel;
 use src\app\Models\SchoolWallet;
+
 class Tests extends Api_Controller
 
 {
@@ -42,68 +43,80 @@ class Tests extends Api_Controller
     public function test()
 
     {
-        SchoolWallet::find();
+        // SchoolWallet::find();
 
         /* $this->logger->info('test.php',[
             'a'=>2,
             'b'=>2
         ]); */
-        die();
+        // die();
         \set_time_limit(0);
-        $jsonFile = file_get_contents('http://localhost/moov/api/image_data.json');
+        $jsonFile = file_get_contents('http://localhost/moov/backend/image_data.json');
         $json = json_decode($jsonFile, true);
         $carModels = []; //json_decode(file_get_contents('data.json'),true);
         $count = 0;
 
         foreach ($json as $value) {
-            //http://themoovapp.com/cars/carimagery-filtered/
-            $fromFilePath = 'C:\xampp\htdocs\moov\scripts\carimagery-filtered\\' . $value['image'];
             $count++;
-            echo "Doing upload $count! <br/>";
-            if ($count>5380/* $this->remoteFileExists("https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars_images/" . $value['image']) */) {
-            
-                
-            //if ($count > count($json)) {
-                
-                $url = \Cloudinary\Uploader::upload(
-                    'C:\xampp\htdocs\moov\scripts\carimagery-thumb\\' . $value['image'],
-                    [
-                        "use_filename" => true,
-                        "folder" => 'public/cars_images/',
-                        "overwrite" => true,
-                        "resource_type" => "image",
-                        'unique_filename' => false
-                    ]
-                )['secure_url'];
-                print("Finished uploading: {$count} to : <br>");
-            }
-            else{
-                //already exists
-                print("Already exists: {$count}<br>");
-                $url="https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars_images/" . $value['image'];
+            $url = "https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars_images/" . $value['image'];
 
-            }
-                array_push($carModels, [
-                    'cm_make_name' => $value['make'],
-                    'cm_model_name' => $value['model'],
-                    'cm_model_image' => $url,
-                    'cm_year_start' => $value['year_start'],
-                    'cm_year_end' => $value['year_end']
-                ]);
-                file_put_contents('data.json', json_encode($carModels));
+            array_push($carModels, [
+                'cm_make_name' => $value['make'],
+                'cm_model_name' => $value['model'],
+                'cm_model_image' => $url,
+                'cm_year_start' => $value['year_start'],
+                'cm_year_end' => $value['year_end']
+            ]);
+            //file_put_contents('data.json', json_encode($carModels));
 
-                //echo "https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars/" . $value['image'].'---'.$url."---";
-                ///}
+            //http://themoovapp.com/cars/carimagery-filtered/
+            // $fromFilePath = 'C:\xampp\htdocs\moov\scripts\carimagery-filtered\\' . $value['image'];
+            // $count++;
+            // echo "Doing upload $count! <br/>";
+            // if ($count>5380/* $this->remoteFileExists("https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars_images/" . $value['image']) */) {
 
-                if (@ob_get_contents()) {
-                    @ob_end_flush();
-                }
-                flush();
 
-                
+            // //if ($count > count($json)) {
+
+            //     $url = \Cloudinary\Uploader::upload(
+            //         'C:\xampp\htdocs\moov\scripts\carimagery-thumb\\' . $value['image'],
+            //         [
+            //             "use_filename" => true,
+            //             "folder" => 'public/cars_images/',
+            //             "overwrite" => true,
+            //             "resource_type" => "image",
+            //             'unique_filename' => false
+            //         ]
+            //     )['secure_url'];
+            //     print("Finished uploading: {$count} to : <br>");
+            // }
+            // else{
+            //     //already exists
+            //     print("Already exists: {$count}<br>");
+            //     $url="https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars_images/" . $value['image'];
+
+            // }
+            //     array_push($carModels, [
+            //         'cm_make_name' => $value['make'],
+            //         'cm_model_name' => $value['model'],
+            //         'cm_model_image' => $url,
+            //         'cm_year_start' => $value['year_start'],
+            //         'cm_year_end' => $value['year_end']
+            //     ]);
+            //     file_put_contents('data.json', json_encode($carModels));
+
+            //     //echo "https://res.cloudinary.com/moov-api/image/upload/v1552487609/public/cars/" . $value['image'].'---'.$url."---";
+            //     ///}
+
+            //     if (@ob_get_contents()) {
+            //         @ob_end_flush();
+            //     }
+            //     flush();
+
+
         }
         CarModel::insert($carModels);
-        echo "Done!";
+        echo "Done! $count";
         die();
 
 
