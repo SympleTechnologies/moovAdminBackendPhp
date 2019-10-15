@@ -560,7 +560,7 @@ class User extends Api_Controller
 			->first();
 
 		$details = array(
-
+			"id" => $users->u_id,
 			"first_name" => $users->u_first_name,
 
 			"last_name" => $users->u_last_name,
