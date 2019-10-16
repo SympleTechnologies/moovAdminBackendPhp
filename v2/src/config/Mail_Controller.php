@@ -64,14 +64,14 @@ class Mail_Controller extends Api_Controller
 			return $mailer->send($message);
 		} catch (\Swift_TransportException $e) {
 			// echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
-			if (int(get_env('MAIL_DEBUG', 0)) > 0){
+			if (\int(get_env('MAIL_DEBUG', 0)) > 0){
 				echo "Swift_TransportException: ".$e->getMessage();
 			}
 			return false;
 		}
 		catch (\Exception $e) {
 			// echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
-			if (int(get_env('MAIL_DEBUG', 0)) > 0){
+			if (\int(get_env('MAIL_DEBUG', 0)) > 0){
 				echo "Exception: ".$e->getMessage();
 			}
 			return false;
