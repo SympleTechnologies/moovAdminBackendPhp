@@ -577,7 +577,7 @@ class User extends Api_Controller
 
 			"gender" => $users->u_gender,
 
-			"wallet_balance" => Hwallet::balance($usersu_id),
+			"wallet_balance" => Hwallet::balance($users->u_id),
 
 			"image" => $users->u_image,
 
