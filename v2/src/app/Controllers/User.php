@@ -560,7 +560,7 @@ class User extends Api_Controller
 			->first();
 
 		$details = array(
-			"id" => $users->u_id,
+			"u_id" => $users->u_id,
 			"first_name" => $users->u_first_name,
 
 			"last_name" => $users->u_last_name,
@@ -577,7 +577,7 @@ class User extends Api_Controller
 
 			"gender" => $users->u_gender,
 
-			"wallet_balance" => Hwallet::balance($users->u_id),
+			"wallet_balance" => Hwallet::balance($usersu_id),
 
 			"image" => $users->u_image,
 
