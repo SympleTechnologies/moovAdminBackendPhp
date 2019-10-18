@@ -46,6 +46,7 @@ class Email extends Api_Controller {
 				'basePath' => $basePath,
 			),
 		);
+		
 
 		if ($this->email->send_mail($maildata)) {
 			SupportMessage::create(
