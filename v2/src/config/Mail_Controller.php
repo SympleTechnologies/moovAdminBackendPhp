@@ -1,4 +1,5 @@
 <?php
+
 namespace src\config;
 
 use PHPMailer\PHPMailer\Exception;
@@ -45,37 +46,31 @@ class Mail_Controller extends Api_Controller
 	}
 	public function sendMailWithMailer($details = array())
 	{
+		$htmlMsg = $this->app->view->fetch($details['view_page'], $details['view_data']);
+		$text = preg_replace('~[\r\n]+~', '\r\n', strip_tags($htmlMsg));
+		$email = new \SendGrid\Mail\Mail();
+		$email->setFrom(get_env('MAIL_FROM'), "MOOV");
+		$email->setSubject($details['subject']);
+		$email->addTo($details['to']);
+		$email->addContent(
+			"text/plain",
+			$text
+		);
+		$email->addContent(
+			"text/html",
+			$htmlMsg
+		);
+		$sendgrid = new \SendGrid(get_env('SENDGRID_API_KEY'));
 		try {
-			$transport = (new \Swift_SmtpTransport(get_env('MAIL_HOST'), get_env('MAIL_PORT')))
-  				->setUsername(get_env('MAIL_USERNAME'))
-  				->setPassword(get_env('MAIL_PASSWORD'))
-				->setEncryption(get_env('MAIL_ENCRYPTION'));
-			$mailer = new \Swift_Mailer($transport);
-
-			$htmlMsg = $this->app->view->fetch($details['view_page'], $details['view_data']);
-			$text=preg_replace('~[\r\n]+~', '\r\n', strip_tags($htmlMsg));
-			// Create a message
-			$message = (new \Swift_Message($details['subject']))
-				->setFrom([get_env('MAIL_FROM') => 'MOOV'])
-				->setTo([$details['to']])
-				->setBody($text)
-				->addPart($htmlMsg, 'text/html')
-				;
-			return $mailer->send($message);
-		} catch (\Swift_TransportException $e) {
-			// echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
-			if (\intval(get_env('MAIL_DEBUG', 0)) > 0){
-				echo "Swift_TransportException: ".$e->getMessage();
+			$response = $sendgrid->send($email);
+			if ($response->statusCode() < 300) {
+				return true;
 			}
-			return false;
-		}
-		catch (\Exception $e) {
-			// echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
-			if (\intval(get_env('MAIL_DEBUG', 0)) > 0){
-				echo "Exception: ".$e->getMessage();
+		} catch (Exception $e) {
+			if (\intval(get_env('MAIL_DEBUG', 0)) > 0) {
+				echo 'Caught exception: ',  $e->getMessage(), "\n";
 			}
-			return false;
 		}
+		return false;
 	}
 }
- 
