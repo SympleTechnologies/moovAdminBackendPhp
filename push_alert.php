@@ -4,7 +4,7 @@ function iOSPush($token, $message) {
 
 	$url = "https://fcm.googleapis.com/fcm/send";
 
-	$serverApiKey = "REDACTED"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_DRIVER');
 
 	$headers = array(
 
@@ -60,7 +60,7 @@ function AndroidPush($deviceToken = '', $message = array()) {
 
 	$url = 'https://android.googleapis.com/gcm/send';
 
-	$serverApiKey = "REDACTED_DEVICE_TOKEN"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_DRIVER');
 
 	$headers = array(
 
@@ -121,7 +121,7 @@ function AndroidPush($deviceToken = '', $message = array()) {
 function iOSPush_rider($token, $message) {
 	$url = "https://fcm.googleapis.com/fcm/send";
 
-	$serverApiKey = "REDACTED_DEVICE_TOKEN"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_RIDER');
 
 	$headers = array(
 
@@ -174,7 +174,7 @@ function iOSPush_rider($token, $message) {
 function AndroidPush_rider($token = '', $message = array()) {
     $url = "https://fcm.googleapis.com/fcm/send";
 
-	$serverApiKey = "REDACTED_DEVICE_TOKEN"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_RIDER');
 
 	$headers = array(
 

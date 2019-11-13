@@ -1127,7 +1127,7 @@ return $this->response->withJson($booking_response);
 
         $destination = "Koruthodu";
 
-        $googleApiKey = 'REDACTED';
+        $googleApiKey = get_env('google_map_api');
 
         $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints";
 
@@ -1280,7 +1280,7 @@ return $this->response->withJson($booking_response);
 
         $destination = "Koruthodu";
 
-        $googleApiKey = 'REDACTED';
+        $googleApiKey = get_env('google_map_api');
 
         $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints";
 
@@ -1323,7 +1323,7 @@ return $this->response->withJson($booking_response);
 
         $destination = "peroorkada";
 
-        $googleApiKey = 'REDACTED';
+        $googleApiKey = get_env('google_map_api');
 
         $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . urlencode($origin) . '&destination=' . urlencode($destination) . '&travelMode=driving&key=' . $googleApiKey . "&libraries=geometry,places&sensor=false&waypoints=pattom";
 
@@ -1364,7 +1364,7 @@ return $this->response->withJson($booking_response);
 
         $callToGoogle = curl_init();
 
-        $googleApiKey = 'REDACTED';
+        $googleApiKey = get_env('google_map_api');
 
         $origin = "kollam";
 
@@ -1399,7 +1399,7 @@ return $this->response->withJson($booking_response);
 
         $callToGoogle = curl_init();
 
-        $googleApiKey = 'REDACTED';
+        $googleApiKey = get_env('google_map_api');
 
         $origin = "kollam";
 

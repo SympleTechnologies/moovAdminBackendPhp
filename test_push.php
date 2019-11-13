@@ -1,7 +1,7 @@
 <?php
 require_once "push_alert.php";
 
-echo AndroidPush_rider('REDACTED_DEVICE_TOKEN', [
+echo AndroidPush_rider(getenv('TEST_DEVICE_PUSH_TOKEN'), [
     'title' => "jjjj",
     'message' => "jjjj",
     'trip_id' => "7",

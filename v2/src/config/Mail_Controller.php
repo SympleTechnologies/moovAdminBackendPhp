@@ -13,11 +13,6 @@ class Mail_Controller extends Api_Controller
 	public function __construct()
 	{
 
-		/*   $this->sender_email          =
-			        $this->sender_email_password = 'REDACTED';
-			        $this->sender_host           = 'smtp.gmail.com';
-			        $this->sender_port           = '587';
-		*/
 		parent::__construct();
 	}
 	public function send_mail($details = array())
