@@ -269,13 +269,9 @@ class Wallet extends Api_Controller {
 		try
 
 		{
-
 			// verify using the library
-
 			$tranx = $paystack->transaction->verify([
-
 				'reference' => $reference, // unique to transactions
-
 			]);
 
 		} catch (\Yabacon\Paystack\Exception\ApiException $e) {
@@ -343,15 +339,10 @@ class Wallet extends Api_Controller {
 			} else {
 
 				$output = array(
-
 					"status" => false,
-
 					"message" => "Authentification failed, please try again",
-
 					"errors" => array("message" => "Security errors"),
-
 					"data" => array("reg_details" => array()),
-
 				);
 
 			}
@@ -361,11 +352,8 @@ class Wallet extends Api_Controller {
 		} else {
 
 			$output = array(
-
 				"status" => false,
-
 				"message" => "Access code failed",
-
 			);
 
 		}
