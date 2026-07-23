@@ -8,3 +8,7 @@ v2/.env
 v2/data.json
 data.json
 text.php
+.env
+*.pem
+*.pem.old
+*.p12

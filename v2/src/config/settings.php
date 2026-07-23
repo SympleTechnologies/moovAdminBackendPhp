@@ -15,11 +15,11 @@ return [
 
 			'host' => get_env('DB_HOST'),
 
-			'database' => get_env('DB_NAME', 'themoovapp_test'), //'themoovapp_test', //themoova_pp_live
+			'database' => get_env('DB_NAME'),
 
-			'username' => get_env('DB_USER'), //'israelalagbe', //themoova_moov
+			'username' => get_env('DB_USER'),
 
-			'password' => get_env('DB_PASS'), //'REDACTED',
+			'password' => get_env('DB_PASS'),
 
 			'charset' => 'utf8',
 
@@ -33,25 +33,4 @@ return [
 
 ]
 
-/*
-
-'driver' => 'mysql',
-
-'host' => 'localhost',
-
-'database' => 'themoova_pp_live',
-
-'username' => 'themoova_moov',
-
-'password' => 'REDACTED',
-
-'charset' => 'utf8',
-
-'collation' => 'utf8_unicode_ci',
-
-'prefix' => '',
-
- */
-
 ?>
-

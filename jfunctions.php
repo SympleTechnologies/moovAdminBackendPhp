@@ -44,8 +44,8 @@ function hmac_verify($bundle, $key)
 function my_simple_crypt($string, $action = 'e')
 {
     // you may change these values to your own
-    $secret_key = 'my_simple_secret_key';
-    $secret_iv = 'my_simple_secret_iv';
+    $secret_key = getenv('SIMPLE_CRYPT_KEY') ?: 'my_simple_secret_key';
+    $secret_iv = getenv('SIMPLE_CRYPT_IV') ?: 'my_simple_secret_iv';
 
     $output = false;
     $encrypt_method = "AES-256-CBC";

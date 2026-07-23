@@ -176,7 +176,7 @@ class Tests extends Api_Controller
 
 
 
-        $deviceToken = "REDACTED_DEVICE_TOKEN";
+        $deviceToken = getenv('TEST_DEVICE_PUSH_TOKEN');
 
 
 
@@ -323,7 +323,7 @@ class Tests extends Api_Controller
     {
 
 
-        // $Geocoder->setApiKey('REDACTED');
+        // $Geocoder->setApiKey(get_env('google_map_api'));
         $response =  \GeometryLibrary\PolyUtil::distanceToLine(
             ['lat' => 61.387002, 'lng' => 23.890636], // point array [lat, lng]
             ['lat' => 61.487002, 'lng' => 23.790636], // line startpoint array [lat, lng]

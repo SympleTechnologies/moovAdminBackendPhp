@@ -4,7 +4,7 @@ function iOSPush($token, $message) {
 
 	$url = "https://fcm.googleapis.com/fcm/send";
 
-	$serverApiKey = "REDACTED"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_DRIVER');
 
 	$headers = array(
 
@@ -60,7 +60,7 @@ function AndroidPush($deviceToken = '', $message = array()) {
 
 	$url = 'https://android.googleapis.com/gcm/send';
 
-	$serverApiKey = "REDACTED_DEVICE_TOKEN"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_DRIVER');
 
 	$headers = array(
 
@@ -121,7 +121,7 @@ function AndroidPush($deviceToken = '', $message = array()) {
 function iOSPush_rider($token, $message) {
 	$url = "https://fcm.googleapis.com/fcm/send";
 
-	$serverApiKey = "REDACTED"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_RIDER');
 
 	$headers = array(
 
@@ -171,11 +171,10 @@ function iOSPush_rider($token, $message) {
 
 }
 
-function AndroidPush_rider($deviceToken = '', $message = array()) {
+function AndroidPush_rider($token = '', $message = array()) {
+    $url = "https://fcm.googleapis.com/fcm/send";
 
-	$url = 'https://android.googleapis.com/gcm/send';
-
-	$serverApiKey = "REDACTED_DEVICE_TOKEN"; //"Your Api key"
+	$serverApiKey = getenv('FCM_SERVER_KEY_RIDER');
 
 	$headers = array(
 
@@ -184,51 +183,44 @@ function AndroidPush_rider($deviceToken = '', $message = array()) {
 		'Authorization:key=' . $serverApiKey,
 
 	);
-
-	//$post=array("result"=>true,"user_id"=>$id,"name=>$name");
-
-	$data = array(
-
-		'registration_ids' => array($deviceToken),
-
-		'data' => array(
-
-			'type' => 'New',
-
-			'ride_id' => @$message['ride_id'],
-
-			'trip_id' => @$message['trip_id'],
-
-			'title' => $message['title'],
-
-			'msg' => $message['message'],
-
-		),
-
-	);
-
 	//print_r($data);
 
+	$notification = [
+		'title' => $message['title'],
+		'text' => $message['message'],
+		'sound' => 'default',
+		//'badge' => '1',
+	];
+	$arrayToSend = [
+		"mutable_content" => true,
+		'data' => [
+			'ride_id' => @$message['ride_id'],
+			'trip_id' => @$message['trip_id'],
+		],
+		'to' => $token,
+		'notification' => $notification,
+		'priority' => 'high',
+	];
+	$json = json_encode($arrayToSend);
+	$headers = array();
+	$headers[] = 'Content-Type: application/json';
+	$headers[] = 'Authorization: key=' . $serverApiKey;
 	$ch = curl_init();
-
 	curl_setopt($ch, CURLOPT_URL, $url);
 
-	if ($headers) {
+	curl_setopt(
+		$ch,
+		CURLOPT_CUSTOMREQUEST,
 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-	}
-
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-	curl_setopt($ch, CURLOPT_POST, true);
-
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
+		"POST"
+	);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	//Send the request
 	$response = curl_exec($ch);
 
 	curl_close($ch);
+	return $response;
 
 }

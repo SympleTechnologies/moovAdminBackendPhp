@@ -14,13 +14,13 @@ return [
 
             'driver' => 'mysql',
 
-            'host' => 'localhost',
+            'host' => get_env('DB_HOST'),
 
-            'database' => 'themoova_pp_live',
+            'database' => get_env('DB_NAME'),
 
-            'username' => 'themoova_moov',
+            'username' => get_env('DB_USER'),
 
-            'password' => 'REDACTED',
+            'password' => get_env('DB_PASS'),
 
             'charset' => 'utf8',
 
@@ -37,30 +37,6 @@ return [
 ]
 
 
-
-/*
-
-
-
-'driver' => 'mysql',
-
-'host' => 'localhost',
-
-'database' => 'themoova_pp_live',
-
-'username' => 'themoova_moov',
-
-'password' => 'REDACTED',
-
-'charset' => 'utf8',
-
-'collation' => 'utf8_unicode_ci',
-
-'prefix' => '',
-
-
-
- */
 
 ?>
 
